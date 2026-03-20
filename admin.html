@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>لوحة إدارة التلاخيص</title>
+<style>
+body{font-family:tahoma;background:#f5f5f5;padding:30px}
+.container{max-width:700px;margin:auto;background:white;padding:25px;border-radius:10px}
+input,textarea,button{width:100%;margin-top:10px;padding:10px}
+button{background:#6a1b9a;color:white;border:none;border-radius:6px;font-size:16px}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>إضافة تلخيص اجتماع</h2>
+
+<label>العنوان</label>
+<input id="title">
+
+<label>التاريخ</label>
+<input type="date" id="date">
+
+<label>المحتوى</label>
+<textarea id="content"></textarea>
+
+<label>صورة (اختياري)</label>
+<input type="file" id="image">
+
+<button onclick="generate()">توليد ملف الموقع</button>
+
+<p>بعد الضغط سيتم تحميل ملف <b>summaries.json</b> الجديد. ارفعه داخل مجلد <b>data</b> في الموقع.</p>
+</div>
+
+<script>
+async function toBase64(file){
+ return new Promise((res,rej)=>{
+  const r=new FileReader();
+  r.onload=()=>res(r.result);
+  r.onerror=rej;
+  r.readAsDataURL(file);
+ })
+}
+
+async function generate(){
+
+let title=document.getElementById("title").value
+let date=document.getElementById("date").value
+let content=document.getElementById("content").value
+
+if(!title||!date||!content){
+ alert("اكمل البيانات")
+ return
+}
+
+let img=""
+let file=document.getElementById("image").files[0]
+if(file) img=await toBase64(file)
+
+let newItem={title,date,content,image:img}
+
+let fileInput=document.createElement("input")
+fileInput.type="file"
+fileInput.accept=".json"
+
+fileInput.onchange=async e=>{
+ let text=await e.target.files[0].text()
+ let data=[]
+ try{data=JSON.parse(text)}catch{alert("ملف غير صالح");return}
+
+ data.unshift(newItem)
+
+ let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"})
+ let url=URL.createObjectURL(blob)
+
+ let a=document.createElement("a")
+ a.href=url
+ a.download="summaries.json"
+ a.click()
+}
+
+alert("اختار ملف summaries.json الحالي")
+fileInput.click()
+
+}
+</script>
+</body>
+</html>

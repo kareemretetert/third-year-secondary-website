@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Kareem Hosny" name="author"/>
+<meta content="كريم حسني, كنيسة, العزية, اجتماع ثانوي" name="keywords"/>
+
+<title>موقع تعليمي</title>
+<link rel="icon" href="Image Mar 15, 2026, 07_55_27 PM.png">
+
+
+<style>
+    body {
+    margin: 0;
+    font-family: 'Cairo', sans-serif;
+    background-color: #e6f8fd;
+    color: #333;
+    direction: rtl;
+}
+
+.header {
+    background-color: #2e3a59;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.main-title {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+.intro-text {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+/* الشريط العلوي */
+.nav-bar {
+    background-color: #4a5670;
+    padding: 10px;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav-list li a:hover {
+    color: #ffd700;
+}
+
+/* المحتوى */
+.main-content {
+    position: relative;
+    left: 450px;
+    top: 50px;
+    text-align: center;
+    padding: 30px;
+}
+
+.church-img {
+    position: relative;
+    left: 50px;
+    background-color: transparent;
+    max-width: 300px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+/* النموذج */
+.feedback-form {
+    background-color: #fff;
+    padding: 20px;
+    display: inline-block;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+::selection{
+    background-color: rgba(212, 212, 212, 0.808);
+    color: #001cbdcc;
+}
+.feedback-form h2 {
+    margin-bottom: 10px;
+}
+
+.feedback-form label {
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+.feedback-form button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #2e3a59;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.feedback-form button:hover {
+    background-color: #1c243b;
+}
+
+/* التذييل */
+.footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #2e3a59;
+    color: white;
+    position: relative;
+    top: 22px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: #f0f8ff;
+}
+
+/* رأس الصفحة */
+.header {
+  text-align: center;
+  padding: 20px;
+  background: #4a148c;
+  color: white;
+}
+
+/* شريط التنقل */
+.nav-bar {
+  background: #6a1b9a;
+  padding: 10px;
+}
+
+.nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
+  gap: 10px;
+}
+
+.nav-list li a {
+  color: white;
+  text-decoration: none;
+  padding: 10px 15px;
+  display: block;
+  background: #7b1fa2;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.nav-list li a:hover {
+  background: #4a148c;
+}
+
+/* المحتوى الرئيسي */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 10px;
+}
+
+/* الآية */
+.verse-container {
+  width: 50vw;
+  max-width: 100%;
+  margin-bottom: 4vh;
+  transition: all 0.3s ease;
+}
+
+.verse-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.verse-box h2 {
+  color: #4a148c;
+  margin-bottom: 16px;
+}
+
+.verse-box p {
+  font-size: 2.5vw;
+  color: #2c3e50;
+  line-height: 1.8;
+  word-spacing: 3px;
+  white-space: normal;
+}
+
+/* صورة الكنيسة */
+.church-image {
+  width: 40vw;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 4vh;
+  transition: all 0.3s ease;
+}
+
+/* الفوتر */
+.footer {
+  background: #4a148c;
+  color: white;
+  text-align: center;
+  padding: 15px 10px;
+}
+
+.per {
+  font-size: 18px;
+  color: #fff;
+}
+
+.kareem {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* ✅ وسط (شاشات تابلت) */
+@media (max-width: 992px) {
+  .verse-container {
+    width: 65vw;
+  }
+
+  .church-image {
+    width: 55vw;
+  }
+
+  .verse-box p {
+    font-size: 3.5vw;
+  }
+}
+
+/* ✅ صغير (موبايل) */
+@media (max-width: 600px) {
+  .verse-container {
+    width: 80vw;
+  }
+
+  .church-image {
+    width: 70vw;
+  }
+
+  .verse-box p {
+    font-size: 4.5vw;
+  }
+}
+
+
+
+   
+  
+/* تحسين تجاوب القسم الرئيسي */
+.main-content {
+  padding: 30px 20px !important;
+  left: 0 !important;
+  top: 0 !important;
+  position: relative !important;
+}
+
+/* جعل الصورة تتجاوب مع أي عرض */
+.church-image {
+  width: 90vw !important;
+  max-width: 350px !important;
+  height: auto !important;
+  margin: 20px auto;
+  display: block;
+}
+
+/* جعل عرض الآية يتناسب دائمًا */
+.verse-container {
+  width: 90vw !important;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* جعل حجم الآية مرن */
+.verse-box p {
+  font-size: clamp(16px, 4vw, 24px);
+  word-wrap: break-word;
+}
+
+/* شريط التنقل يتكيف مع المساحة */
+.nav-list {
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+  justify-content: center !important;
+}
+
+/* تحسين التجاوب أكثر */
+@media (max-width: 992px) {
+  .verse-box p {
+    font-size: clamp(14px, 3.5vw, 20px);
+  }
+
+  .church-image {
+    max-width: 320px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .church-image {
+    max-width: 260px !important;
+  }
+
+  .verse-box p {
+    font-size: clamp(12px, 4vw, 18px);
+  }
+
+  .nav-list li a {
+    font-size: 14px !important;
+    padding: 6px 10px !important;
+  }
+}
+#versePreview{
+  
+  font-size: 22px;
+}
+
+/* انيميشن ظهور البوكس */
+.tip-animation{
+opacity:0;
+transform:translateY(-40px);
+animation:boxFadeDown 1s ease forwards;
+}
+
+@keyframes boxFadeDown{
+from{
+opacity:0;
+transform:translateY(-40px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+/* مؤشر الكتابة */
+.typing-cursor::after{
+content:"|";
+animation:blink 1s infinite;
+margin-right:5px;
+}
+
+@keyframes blink{
+0%{opacity:1;}
+50%{opacity:0;}
+100%{opacity:1;}
+}
+
+</style>
+
+
+
+
+
+
+
+
+</head>
+<body>
+<header class="header">
+
+<p class="intro-text">
+    </p>
+</header>
+<nav class="nav-bar">
+<ul class="nav-list">
+<li><a href="quiz_list.html">المسابقات</a></li>
+<li><a href="meatingSummrise.html">تنبيهات</a></li>
+</ul>
+</nav>
+<main class="main-content" style="text-align: center; padding: 20px;">
+  <span class="verse-container">
+<div class="verse-box tip-animation">
+<h2>نصيحة اليوم 💡</h2>
+<p id="versePreview">جاري التحميل...</p>
+</div>
+</span>
+<img alt="صورة الكنيسة" class="church-image" src="Picsart_26-03-12_21-36-00-268.png"/>
+</main>
+<footer class="footer">
+<p class="per">تم الإنشاء بواسطة: <a class="kareem" href="https://www.facebook.com/profile.php?id=100069476530913&amp;locale=ar_AR" target="_blank">Kareem Hosny</a></p>
+</footer>
+<!-- مشغل الفيديو -->
+<script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+<script>
+    const player = new Plyr('#my-video', {
+      controls: [
+        'play', 'rewind', 'fast-forward',
+        'progress', 'current-time', 'duration',
+        'mute', 'volume',
+        'settings', 'download', 'fullscreen'
+      ],
+      settings: ['quality', 'speed', 'loop']
+    });
+  </script>
+<!-- آية اليوم - JavaScript -->
+
+<script>
+   const verses = [
+"ابدأ يومك بهدف واضح حتى لو كان بسيطًا.",
+"لا تؤجل مذاكرتك… المستقبل يتبني بما تفعله اليوم.",
+"كل ساعة مذاكرة اليوم تقربك من حلمك.",
+"اجتهد الآن لترتاح لاحقًا.",
+"لا تقارن نفسك بغيرك بل بنفسك بالأمس.",
+"النجاح يحتاج استمرار وليس ذكاء فقط.",
+"رتب وقتك فالوقت غير المنظم يضيع الأحلام.",
+"لو تعبت تذكر لماذا بدأت.",
+"اجعل هاتفك بعيدًا أثناء المذاكرة.",
+"ابدأ بالأصعب أولًا ثم الأسهل.",
+"كل يوم فرصة جديدة لتكون أفضل.",
+"القليل المنتظم أفضل من الكثير المتقطع.",
+"الفشل درس وليس نهاية.",
+"احط نفسك بأصدقاء يشجعونك على النجاح.",
+"حدد هدفك بوضوح واسعي نحوه.",
+"التعب اليوم يصنع نجاح الغد.",
+"لا تضيع وقتك فيما لا يفيد.",
+"التركيز أهم من عدد ساعات المذاكرة.",
+"كافئ نفسك بعد إنجاز مهامك.",
+"تعلم من أخطائك ولا تخجل منها.",
+"كل إنجاز كبير يبدأ بخطوة صغيرة.",
+"الثقة بالنفس نصف النجاح.",
+"لا تسمح لليأس أن يسرق حلمك.",
+"اجعل لك خطة أسبوعية للمذاكرة.",
+"العلم هو أفضل استثمار للمستقبل.",
+"الاستمرار أهم من الحماس المؤقت.",
+"تعلم مهارات جديدة بجانب الدراسة.",
+"اقطع أي شيء يشتت تركيزك.",
+"اجعل حلمك أمام عينيك دائمًا.",
+"النجاح رحلة وليس محطة.",
+"الإنجازات الصغيرة تصنع إنجازات كبيرة.",
+"الانضباط أهم طريق للنجاح.",
+"الفترة الصعبة تصنع أشخاصًا أقوى.",
+"اقرأ ولو صفحة كل يوم.",
+"اجعل لك وقتًا للراحة حتى لا تمل.",
+"لا تستسلم حتى لو تأخر النجاح.",
+"كل يوم بدون هدف هو يوم ضائع.",
+"الإنسان الناجح لا يستسلم.",
+"استثمر وقتك في التعلم.",
+"الصلاة تعطيك قوة وسلام.",
+"حافظ على صحتك ونومك الجيد.",
+"ركز على هدفك وليس على الصعوبات.",
+"لا تخف من السؤال عندما لا تفهم.",
+"كل مشكلة لها حل إذا فكرت بهدوء.",
+"تعلم الصبر فهو مفتاح النجاح.",
+"اعمل بجد حتى تفخر بنفسك.",
+"المستقبل يصنعه المجتهدون.",
+"ثق أن تعبك لن يضيع.",
+"ابدأ الآن وليس غدًا.",
+"اجعل يومك أفضل من أمس."
+];
+    function getShuffledIndexes(seed, length) {
+      const random = mulberry32(seed);
+      const arr = Array.from({ length }, (_, i) => i);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function mulberry32(a) {
+      return function () {
+        var t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function displayVersePreview() {
+  const now = new Date();
+  const startDate = new Date("2024-01-01");
+  const daysPassed = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+  const round = Math.floor(daysPassed / verses.length);
+  const dayIndex = daysPassed % verses.length;
+  const shuffledIndexes = getShuffledIndexes(round, verses.length);
+  const verse = verses[shuffledIndexes[dayIndex]];
+
+  const element = document.getElementById("versePreview");
+  element.classList.add("typing-cursor");
+  element.innerText = "";
+
+  let i = 0;
+
+function typeWriter(){
+  if(i < verse.length){
+    element.textContent += verse[i];
+    i++;
+    setTimeout(typeWriter,40);
+  } else {
+    element.classList.remove("typing-cursor");
+  }
+}
+
+  typeWriter();
+}
+
+    displayVersePreview();
+
+  </script>
+  
+</body>
+</html>

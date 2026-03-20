@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>الامتحان</title>
+<link rel="icon" href="Image Mar 15, 2026, 07_55_27 PM.png">
+<style>
+
+body{
+
+font-family:Tahoma;
+direction:rtl;
+background:#f0f8ff;
+text-align:center;
+padding:30px;
+
+}
+
+.question{
+
+background:white;
+padding:20px;
+margin:20px auto;
+max-width:600px;
+border-radius:10px;
+
+}
+
+.option{
+
+display:block;
+margin:5px;
+
+}
+
+#timer{
+
+font-size:20px;
+color:red;
+
+}
+
+button{
+
+padding:10px 20px;
+border:none;
+background:#4CAF50;
+color:white;
+border-radius:10px;
+
+}
+#timerBox{
+
+width:300px;
+margin:20px auto;
+text-align:center;
+
+}
+
+#timerText{
+
+font-size:28px;
+font-weight:bold;
+margin-bottom:10px;
+
+}
+
+#timerBarContainer{
+
+width:100%;
+height:10px;
+background:#ddd;
+border-radius:10px;
+overflow:hidden;
+
+}
+
+#timerBar{
+
+height:10px;
+width:100%;
+background:#4CAF50;
+transition:width 1s linear;
+
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>الامتحان</h2>
+
+<div id="timerBox">
+
+<div id="timerText">10:00</div>
+
+<div id="timerBarContainer">
+<div id="timerBar"></div>
+</div>
+
+</div>
+
+<div id="quizContainer"></div>
+
+<button onclick="finishQuiz()">إنهاء</button>
+
+<script>
+
+let questions=[]
+let time=0
+
+const quizIndex=localStorage.getItem("quizIndex")
+
+fetch("quiz.json")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+const quiz=data[quizIndex]
+
+questions=quiz.questions
+
+time = quiz.time * 60
+
+startTimer()
+
+renderQuiz()
+
+})
+
+function renderQuiz(){
+
+const container=document.getElementById("quizContainer")
+
+questions.forEach((q,i)=>{
+
+let html=`<div class="question">
+
+<b>س${i+1}:</b> ${q.question}
+
+`
+
+q.options.forEach((opt,index)=>{
+
+html+=`
+
+<label class="option">
+
+<input type="radio" name="q${i}" value="${index+1}">
+
+${index+1} - ${opt}
+
+</label>
+
+`
+
+})
+
+html+="</div>"
+
+container.innerHTML+=html
+
+})
+
+}
+
+function startTimer(){
+
+const totalTime = time
+
+const bar=document.getElementById("timerBar")
+
+const t=setInterval(()=>{
+
+time--
+
+let minutes = Math.floor(time / 60)
+let seconds = time % 60
+
+if(seconds < 10){
+seconds = "0"+seconds
+}
+
+if(minutes < 10){
+minutes = "0"+minutes
+}
+
+document.getElementById("timerText").innerText =
+minutes + ":" + seconds
+
+
+let percent = (time / totalTime) * 100
+
+bar.style.width = percent + "%"
+
+if(percent < 30){
+
+bar.style.background = "red"
+
+}
+
+if(time<=0){
+
+clearInterval(t)
+
+finishQuiz()
+
+}
+
+},1000)
+
+}
+
+function finishQuiz(){
+
+let score=0
+let answers=[]
+
+questions.forEach((q,i)=>{
+
+const selected=document.querySelector(`input[name=q${i}]:checked`)
+
+const chosen = selected ? parseInt(selected.value) : null
+
+answers.push({
+
+question:q.question,
+options:q.options,
+correct:q.answer,
+chosen:chosen
+
+})
+
+if(chosen == q.answer){
+score++
+}
+
+})
+localStorage.setItem("quiz_score",score)
+localStorage.setItem("quiz_total",questions.length)
+localStorage.setItem("quiz_answers",JSON.stringify(answers))
+
+window.location="results.html"
+
+}
+
+</script>
+
+</body>
+</html>
