@@ -1,138 +1,268 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ملخص الاجتماع</title>
-  <meta name="author" content="Kareem Hosny" />
-  <meta name="description" content="الموقع معمول بكل حب لمساعدة وخدمة الكنيسة بواسطة كريم حسني" />
-  <meta name="keywords" content="كريم حسني, كنيسة, العزية, اجتماع ثانوي" />
-  <link rel="icon" href="imgsfile/icon.png" type="image/x-icon" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+<title>ملخص الاجتماع</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      direction: rtl;
-      background-color: #f0f8ff;
-      padding: 20px;
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    h1 {
-      color: #444;
-      font-size: 2rem;
-    }
-    .back-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .btn {
-      background-image: linear-gradient(to left,#cf98d6d2,rgb(181, 70, 196));
-      color: white;
-      padding: 10px 20px;
-      border-radius: 30px;
-      font-weight: bold;
-      text-decoration: none;
-      border: 2px solid #38373a;
-      transition: 0.3s;
-    }
-    .btn:hover {
-      background-color: #666;
-    }
-    .content {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    img, video {
-      max-width: 100%;
-      display: block;
-      margin: 20px auto;
-      border-radius: 8px;
-    }
-    .archive-card {
-      margin-bottom: 30px;
-    }
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-    }
-  </style>
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma;
+  direction: rtl;
+  background: #f0f8ff;
+  padding: 20px;
+}
+
+/* أزرار */
+.back-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background-image: linear-gradient(to left,#cf98d6d2,rgb(181, 70, 196));
+  color: white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  text-decoration: none;
+  border: 2px solid #38373a;
+}
+
+/* العنوان */
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+h1 { font-size: 1.8rem; }
+
+/* الكارت */
+.content {
+  max-width: 850px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* النص */
+.content p {
+  line-height: 1.8;
+  margin-top: 20px;
+}
+
+/* الصور */
+.content img {
+  max-width: 100%;
+  display: block;
+  margin: 15px auto;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.content img:hover {
+  transform: scale(1.03);
+}
+
+/* الفيديو */
+video {
+  max-width: 100%;
+  display: block;
+  margin: 20px auto;
+  border-radius: 10px;
+}
+
+/* ملفات */
+.file-box{
+  background:#fafafa;
+  border-radius:10px;
+  padding:15px;
+  margin-top:15px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.file-name{
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.view-btn, .download-btn{
+  display:inline-block;
+  margin:8px;
+  padding:8px 15px;
+  border-radius:20px;
+  text-decoration:none;
+  color:white;
+  font-weight:bold;
+}
+
+.view-btn{ background:#1976d2; }
+.download-btn{ background:#2e7d32; }
+
+/* fullscreen */
+.lightbox {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.lightbox img {
+  max-width:90%;
+  max-height:90%;
+  border-radius:10px;
+}
+</style>
 </head>
+
 <body>
-  <div class="back-buttons">
-    <a class="btn" href="index.html">الصفحة الرئيسية ⬅</a>
-    <a class="btn" href="archive-final.html">الأرشيف</a>
-  </div>
-  <div class="header">
-    <h1 id="title">تحميل آخر تلخيص...</h1>
-    <p id="date"></p>
-  </div>
-  <div class="content">
-    <img id="image" style="display:none;">
-    <p id="content"></p>
-    <div id="video"></div>
-  </div>
-  <script>
-    fetch("summaries.json?v=" + Date.now())
+
+<div class="back-buttons">
+  <a class="btn" href="index.html">الصفحة الرئيسية ⬅</a>
+  <a class="btn" href="archive-final.html">الأرشيف</a>
+</div>
+
+<div class="header">
+  <h1 id="title">تحميل...</h1>
+  <p id="date"></p>
+</div>
+
+<div class="content"></div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+<script>
+fetch("summaries.json")
 .then(res => res.json())
 .then(list => {
-if(!list || !list.length) return
-const a = list[0]   // آخر تلخيص
+
+if(!list.length){
+document.getElementById("title").innerText = "لا يوجد تلخيصات"
+return
+}
+
+const a = list[0]
 
 document.getElementById("title").innerText = a.title
-document.getElementById("date").innerText = "📅 التاريخ: " + a.date
-document.getElementById("content").innerText = a.content
+document.getElementById("date").innerText = "📅 " + a.date
 
 const contentDiv = document.querySelector(".content")
+contentDiv.innerHTML = ""
 
-// عرض الصور
-if(a.images){
+// 🖼️ الصور
+if(a.images && a.images.length){
 a.images.forEach(img=>{
 const image=document.createElement("img")
-image.src=img.data
+image.src=img
+
+image.onclick = ()=>{
+const lightbox = document.createElement("div")
+lightbox.className="lightbox"
+
+const bigImg=document.createElement("img")
+bigImg.src=img
+
+lightbox.appendChild(bigImg)
+lightbox.onclick = ()=> lightbox.remove()
+
+document.body.appendChild(lightbox)
+}
+
 contentDiv.appendChild(image)
 })
 }
 
-// عرض الفيديوهات
-if(a.videos){
+// 🎥 الفيديو
+if(a.videos && a.videos.length){
 a.videos.forEach(v=>{
 const video=document.createElement("video")
 video.controls=true
-video.src=v.data
+video.className="plyr-video"
+video.src=v
 contentDiv.appendChild(video)
 })
 }
 
-// عرض الملفات
-if(a.files){
+// 📄 الملفات (نسخة مطورة 🔥)
+if(a.files && a.files.length){
 a.files.forEach(f=>{
-const link=document.createElement("a")
-link.href=f.data
-link.download=f.name
-link.innerText="📄 تحميل "+f.name
-link.style.display="block"
-link.style.margin="10px 0"
-contentDiv.appendChild(link)
+
+const ext = f.split('.').pop().toLowerCase()
+
+let fileType = "📄 ملف"
+if(ext === "pdf") fileType = "📕 PDF"
+else if(ext === "doc" || ext === "docx") fileType = "📝 Word"
+else if(ext === "ppt" || ext === "pptx") fileType = "📊 PowerPoint"
+
+const fileName = f.split('/').pop()
+
+const box = document.createElement("div")
+box.className = "file-box"
+
+const name = document.createElement("div")
+name.className = "file-name"
+name.innerText = fileType + " - " + fileName
+
+// زر عرض
+const viewBtn = document.createElement("a")
+viewBtn.href = f
+viewBtn.innerText = "👁 عرض"
+viewBtn.target = "_blank"
+viewBtn.className = "view-btn"
+
+
+
+// إضافة العناصر
+box.appendChild(name)
+box.appendChild(viewBtn)
+box.appendChild(downloadBtn)
+
+// 📄 preview للـ PDF
+if(ext === "pdf"){
+const iframe = document.createElement("iframe")
+iframe.src = f
+iframe.style.width = "100%"
+iframe.style.height = "400px"
+iframe.style.marginTop = "10px"
+iframe.style.borderRadius = "10px"
+
+box.appendChild(iframe)
+}
+
+contentDiv.appendChild(box)
+
 })
 }
 
+// 📝 النص
+const text=document.createElement("p")
+text.innerText = a.content
+contentDiv.appendChild(text)
+
+// تفعيل Plyr
+setTimeout(()=>{
+document.querySelectorAll('.plyr-video').forEach(v=> new Plyr(v))
+},300)
+
 })
-  </script>
+</script>
+
 </body>
 </html>
