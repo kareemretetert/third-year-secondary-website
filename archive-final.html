@@ -1,33 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>الأرشيف</title>
-  <meta name="author" content="Kareem Hosny" />
-  <meta name="description" content="مكتبة أرشيف التلاخيص السابقة للاجتماعات" />
-  <link rel="icon" href="imgsfile/icon.png" type="image/x-icon" />
-
-
 
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-family: "Segoe UI", Tahoma;
       direction: rtl;
       background-color: #f0f8ff;
       padding: 20px;
     }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #333;
-      font-size: 2rem;
-    }
+
     .back-buttons {
       display: flex;
       justify-content: center;
@@ -35,6 +22,7 @@
       margin-bottom: 20px;
       flex-wrap: wrap;
     }
+
     .btn {
       background-image: linear-gradient(to left,#cf98d6d2,rgb(181, 70, 196));
       color: white;
@@ -43,9 +31,15 @@
       font-weight: bold;
       text-decoration: none;
       border: 2px solid #38373a;
-      transition: 0.3s;
     }
-    .btn:hover { background-color: #555; }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h1 { font-size: 2rem; }
+
     .container {
       display: flex;
       flex-direction: column;
@@ -53,6 +47,7 @@
       max-width: 900px;
       margin: auto;
     }
+
     .card {
       background-color: white;
       border-radius: 12px;
@@ -62,39 +57,73 @@
       transform: translateY(30px);
       animation: fadeInUp 0.7s ease forwards;
     }
+
     .card h2 {
       color: #5c2c8a;
       font-size: 1.3rem;
-      margin-bottom: 10px;
       text-align: center;
     }
-    .card p { margin: 10px 0; }
+
     img, video {
       max-width: 100%;
       display: block;
       margin: 10px auto;
       border-radius: 8px;
     }
+
+    .file-box{
+      background:#fafafa;
+      border-radius:10px;
+      padding:15px;
+      margin-top:15px;
+      text-align:center;
+    }
+
+    .file-name{
+      font-weight:bold;
+      margin-bottom:10px;
+    }
+
+    .view-btn{
+      display:inline-block;
+      margin:8px;
+      padding:8px 15px;
+      border-radius:20px;
+      text-decoration:none;
+      color:white;
+      font-weight:bold;
+      background:#1976d2;
+    }
+
+    iframe{
+      width:100%;
+      height:400px;
+      margin-top:10px;
+      border-radius:10px;
+    }
+
     @keyframes fadeInUp {
       to { opacity: 1; transform: translateY(0); }
     }
-    @media (max-width: 600px) {
-      h1 { font-size: 1.5rem; }
-      .card h2 { font-size: 1.1rem; }
-    }
   </style>
 </head>
-<body>
-  <div class="back-buttons">
-    <a class="btn" href="index.html">الصفحة الرئيسية ⬅</a>
-    <a class="btn" href="meatingSummrise.html">العودة</a>
-  </div>
-  <div class="header">
-    <h1>📚 أرشيف الاجتماعات</h1>
-  </div>
-  <div class="container" id="archive"></div>
 
-  <script>
+<body>
+
+<div class="back-buttons">
+  <a class="btn" href="index.html">الصفحة الرئيسية ⬅</a>
+  <a class="btn" href="meatingSummrise.html">العودة</a>
+</div>
+
+<div class="header">
+  <h1>📚 أرشيف الاجتماعات</h1>
+</div>
+
+<div class="container" id="archive"></div>
+
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+<script>
 
 fetch("summaries.json")
 .then(res => res.json())
@@ -102,64 +131,88 @@ fetch("summaries.json")
 
 const archive = document.getElementById("archive")
 
-// تجاهل أحدث تلخيص
 const archived = list.slice(1)
 
-// لو مفيش أرشيف
-if(!archived || archived.length === 0){
+if(!archived.length){
 archive.innerHTML = "<p style='text-align:center;color:#777;'>لا يوجد أرشيف حالياً</p>"
 return
 }
 
 archived.forEach((data,index)=>{
 
-// لو البيانات فاضية تجاهلها
 if(!data || !data.title) return
 
 const card = document.createElement("div")
 card.className = "card"
 card.style.animationDelay = `${index * 0.15}s`
 
-let imagesHTML=""
-if(data.images && data.images.length){
-data.images.forEach(img=>{
-imagesHTML += `<img src="${img.data}">`
-})
-}
-
-let videosHTML=""
-if(data.videos && data.videos.length){
-data.videos.forEach(v=>{
-videosHTML += `<video controls src="${v.data}"></video>`
-})
-}
-
-let filesHTML=""
-if(data.files && data.files.length){
-data.files.forEach(f=>{
-filesHTML += `<a href="${f.data}" download="${f.name}" style="display:block;margin:10px 0;">📄 تحميل ${f.name}</a>`
-})
-}
-
-card.innerHTML = `
-
+let contentHTML = `
 <h2>${data.title}</h2>
-
 <p>📅 التاريخ: ${data.date || ""}</p>
-
-${imagesHTML}
-
-<p>${data.content || ""}</p>
-
-${videosHTML}
-
-${filesHTML}
-
 `
 
+// 🖼 الصور
+if(data.images){
+data.images.forEach(img=>{
+contentHTML += `<img src="${img}">`
+})
+}
+
+// 🎥 الفيديو (مظبوط)
+if(data.videos){
+data.videos.forEach(v=>{
+contentHTML += `
+<video controls class="plyr-video" src="${v}"></video>
+`
+})
+}
+
+// 📄 الملفات (نفس صفحة العرض)
+if(data.files){
+data.files.forEach(f=>{
+
+const ext = f.split('.').pop().toLowerCase()
+const fileName = decodeURIComponent(f.split('/').pop())
+
+let fileType = "📄 ملف"
+if(ext === "pdf") fileType = "📕 PDF"
+else if(ext === "doc" || ext === "docx") fileType = "📝 Word"
+else if(ext === "ppt" || ext === "pptx") fileType = "📊 PowerPoint"
+
+contentHTML += `
+<div class="file-box">
+
+<div class="file-name">
+${fileType} - ${fileName}
+</div>
+
+<a href="${f}" target="_blank" class="view-btn">
+👁 عرض
+</a>
+`
+
+// preview PDF
+if(ext === "pdf"){
+contentHTML += `<iframe src="${f}"></iframe>`
+}
+
+contentHTML += `</div>`
+
+})
+}
+
+// 📝 النص
+contentHTML += `<p>${data.content || ""}</p>`
+
+card.innerHTML = contentHTML
 archive.appendChild(card)
 
 })
+
+// تشغيل الفيديو
+setTimeout(()=>{
+document.querySelectorAll('.plyr-video').forEach(v=> new Plyr(v))
+},300)
 
 })
 .catch(()=>{
@@ -168,5 +221,6 @@ document.getElementById("archive").innerHTML =
 })
 
 </script>
+
 </body>
 </html>
