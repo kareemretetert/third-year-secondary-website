@@ -39,11 +39,17 @@ text-align:right;
 font-size:18px;
 }
 
+/* 📸 حاوية الصورة */
+.img-container{
+position:relative;
+flex:1;
+max-width:250px;
+width:100%;
+}
+
 /* 📸 الصورة */
 .question-img{
-flex:1;
 width:100%;
-max-width:250px;
 height:180px;
 border-radius:10px;
 object-fit:contain;
@@ -55,16 +61,26 @@ transition:0.3s;
 transform:scale(1.05);
 }
 
-/* 📱 موبايل */
-@media(max-width:600px){
-.question-box{
-flex-direction:column;
+/* 🔍 أيقونة التكبير */
+.zoom-icon{
+position:absolute;
+bottom:8px;
+left:8px;
+background:rgba(0,0,0,0.6);
+color:white;
+border-radius:50%;
+width:35px;
+height:35px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
+cursor:pointer;
+transition:0.3s;
 }
 
-.question-img{
-max-width:100%;
-height:auto;
-}
+.zoom-icon:hover{
+background:black;
 }
 
 .option{
@@ -128,6 +144,21 @@ z-index:999;
 max-width:90%;
 max-height:90%;
 border-radius:10px;
+}
+
+/* 📱 موبايل */
+@media(max-width:600px){
+.question-box{
+flex-direction:column;
+}
+
+.img-container{
+max-width:100%;
+}
+
+.question-img{
+height:auto;
+}
 }
 
 </style>
@@ -194,9 +225,14 @@ let html=`
 </div>
 `
 
-// 📸 صورة
+// 📸 صورة + أيقونة تكبير
 if(q.image){
-html+=`<img src="${q.image}" class="question-img" onclick="openImage(this.src)">`
+html+=`
+<div class="img-container">
+<img src="${q.image}" class="question-img" onclick="openImage('${q.image}')">
+<div class="zoom-icon" onclick="openImage('${q.image}')">🔍</div>
+</div>
+`
 }
 
 html+=`</div>`
