@@ -6,5 +6,13 @@
     "quiz": "امتحان",
     "date": "2026-03-21T22:56:23.888Z",
     "finished": true
+  },
+  {
+    "name": "ملك",
+    "score": 0,
+    "total": 1,
+    "quiz": "نن",
+    "date": "2026-03-21T23:10:32.936Z",
+    "finished": true
   }
 ]
