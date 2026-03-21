@@ -89,7 +89,13 @@ background:#d9534f;
 <div id="quizList"></div>
 
 <script>
+const password="youssef123"
+const entered=prompt("ادخل كلمة المرور")
 
+if(entered!==password){
+document.body.innerHTML="<h2 style='text-align:center;margin-top:100px'>كلمة المرور غير صحيحة</h2>"
+throw new Error("access denied")
+}
 let quizzes=[]
 let questions=[]
 
