@@ -206,44 +206,50 @@ finishQuiz()
 }
 
 
+    // ✅ الجديد: حفظ النتيجة
 async function saveResult(score,total){
-  try{
-    const name = localStorage.getItem("quiz_username") || "بدون اسم"
-    const index = localStorage.getItem("quizIndex")
-    const quizTitle = localStorage.getItem("quiz_title") || "امتحان"
 
-    const result = {
-      name: name,
-      score: score,
-      total: total,
-      quiz: quizTitle,
-      date: new Date().toISOString(),
-      finished: true
-    }
+try{
 
-    // نجيب الملف الحالي من السيرفر
-    let old = []
-    try{
-      const r = await fetch("results.json")
-      old = await r.json()
-      if(!Array.isArray(old)) old = []
-    } catch {}
+const name = localStorage.getItem("quiz_username") || "بدون اسم"
+const index = localStorage.getItem("quizIndex")
 
-    // ✅ دمج النتيجة الجديدة مع القديم
-    old.push(result)
+const res = await fetch("quiz.json")
+const quizzes = await res.json()
+const quizTitle = quizzes[index]?.title || "امتحان"
 
-    // رفع الملف بعد الدمج
-    await fetch("/.netlify/functions/saveResults",{
-      method: "POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify(old)
-    })
-
-  }catch(e){
-    console.log("خطأ في حفظ النتيجة", e)
-  }
+const result = {
+name: name,
+score: score,
+total: total,
+quiz: quizTitle,
+date: new Date().toISOString(),
+finished: true
 }
 
+// تحميل القديم
+let old=[]
+try{
+const r = await fetch("results.json")
+old = await r.json()
+if(!Array.isArray(old)) old=[]
+}catch{}
+
+// إضافة
+old.push(result)
+
+// حفظ
+await fetch("/.netlify/functions/saveResults",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(old)
+})
+
+}catch(e){
+console.log("خطأ في حفظ النتيجة", e)
+}
+
+}
 
 async function finishQuiz(){
 
