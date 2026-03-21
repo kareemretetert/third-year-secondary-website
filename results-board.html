@@ -143,7 +143,7 @@ function renderResults(){
     filtered.sort((a,b)=> new Date(a.date) - new Date(b.date))
   }
 
-  // عرض النتائج
+  // عرض النتائج مع ترقيم صحيح لكل طالب
   filtered.forEach((r,index)=>{
     let medal = ""
     let extraClass = ""
