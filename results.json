@@ -6,5 +6,13 @@
     "quiz": "امتحان",
     "date": "2026-03-21T20:01:44.845Z",
     "finished": true
+  },
+  {
+    "name": "جوليا",
+    "score": 1,
+    "total": 1,
+    "quiz": "امتحان",
+    "date": "2026-03-21T20:02:49.611Z",
+    "finished": true
   }
 ]
