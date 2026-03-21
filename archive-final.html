@@ -118,31 +118,41 @@
 
 
 
-    /* 🎥 تصغير الفيديو */
-video, .plyr {
-  max-width: 600px;
-  margin: 20px auto;
-}
-
-/* 🎥 تقليل حجم الأزرار */
-.plyr__controls {
-  font-size: 12px;
-  padding: 5px !important;
-}
-
-/* 🎥 تصغير الأزرار نفسها */
-.plyr__control {
-  transform: scale(0.8);
-}
-
-/* 🎥 تصغير شريط التحكم */
-.plyr__progress input {
-  height: 4px;
-}
-
-/* 🎥 تخفيف الشكل العام */
+  /* 🎥 شكل الفيديو الطبيعي */
 .plyr {
-  border-radius: 10px;
+  max-width: 700px;
+  margin: 20px auto;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* يخلي الفيديو ياخد العرض كامل */
+.plyr video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* يرجع الأزرار للوضع الطبيعي */
+.plyr__controls {
+  font-size: 14px;
+  padding: 10px;
+  flex-wrap: wrap;
+}
+
+/* يمنع خروج الأزرار برا */
+.plyr__control {
+  transform: none;
+}
+
+/* شريط التقدم طبيعي */
+.plyr__progress input {
+  height: 6px;
+}
+
+/* تحسين توزيع العناصر */
+.plyr__controls__item {
+  margin: 0 4px;
 }
   </style>
 </head>
