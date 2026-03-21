@@ -1,1 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>نتائج الطلاب</title>
 
+<style>
+
+body{
+font-family:Tahoma;
+direction:rtl;
+background:#f0f8ff;
+padding:30px;
+text-align:center;
+}
+
+h2{
+margin-bottom:20px;
+}
+
+.controls{
+margin-bottom:20px;
+}
+
+select{
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+.card{
+background:white;
+padding:15px;
+margin:10px auto;
+max-width:600px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+text-align:right;
+}
+
+.top1{
+border:3px solid gold;
+background:#fff8dc;
+}
+
+.medal{
+font-size:20px;
+margin-left:5px;
+}
+
+.rank{
+font-weight:bold;
+font-size:18px;
+}
+
+.highlight{
+color:#e91e63;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>🏆 نتائج الطلاب</h2>
+
+<div class="controls">
+
+<label>ترتيب حسب:</label>
+
+<select id="sortType" onchange="renderResults()">
+<option value="score">الأعلى درجة</option>
+<option value="time">الأسبق</option>
+</select>
+
+</div>
+
+<div id="resultsContainer"></div>
+
+<script>
+
+let results=[]
+
+// تحميل النتائج
+async function loadResults(){
+
+try{
+const res = await fetch("results.json")
+results = await res.json()
+
+if(!Array.isArray(results)) results=[]
+
+renderResults()
+
+}catch{
+document.getElementById("resultsContainer").innerHTML =
+"<p>لا توجد نتائج</p>"
+}
+
+}
+
+window.onload = loadResults
+
+
+function renderResults(){
+
+const container = document.getElementById("resultsContainer")
+container.innerHTML=""
+
+let sorted = [...results]
+
+const type = document.getElementById("sortType").value
+
+// 🔥 ترتيب
+if(type === "score"){
+
+sorted.sort((a,b)=>{
+if(b.score !== a.score){
+return b.score - a.score
+}else{
+return new Date(a.date) - new Date(b.date)
+}
+})
+
+}else{
+
+sorted.sort((a,b)=>{
+return new Date(a.date) - new Date(b.date)
+})
+
+}
+
+// عرض
+sorted.forEach((r,index)=>{
+
+let medal = ""
+let extraClass = ""
+
+if(index === 0){
+medal = "🥇"
+extraClass = "top1"
+}
+else if(index === 1){
+medal = "🥈"
+}
+else if(index === 2){
+medal = "🥉"
+}
+
+const percent = Math.round((r.score / r.total) * 100)
+
+container.innerHTML += `
+
+<div class="card ${extraClass}">
+
+<div class="rank">
+${medal} المركز ${index+1}
+</div>
+
+<p><b>👤 الاسم:</b> ${r.name} ${index===0 ? "⭐" : ""}</p>
+
+<p><b>📝 الامتحان:</b> ${r.quiz}</p>
+
+<p><b>📊 الدرجة:</b> ${r.score} / ${r.total}</p>
+
+<p><b>📈 النسبة:</b> ${percent}%</p>
+
+<p><b>⏱ الوقت:</b> ${new Date(r.date).toLocaleString()}</p>
+
+</div>
+
+`
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
