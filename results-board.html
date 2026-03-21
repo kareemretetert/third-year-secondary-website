@@ -32,13 +32,13 @@ select{
 }
 
 .card{
-  background: white;
-  padding: 15px;
-  margin: 10px auto;
-  max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  text-align: right;
+  background:white;
+  padding:15px;
+  margin:10px auto;
+  max-width:600px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+  text-align:right;
   transition: transform 0.2s;
 }
 .card:hover{
@@ -46,32 +46,31 @@ select{
 }
 
 .top1{
-  border: 3px solid gold;
-  background: #fff8dc;
+  border:3px solid gold;
+  background:#fff8dc;
 }
 
 .medal{
-  font-size: 22px;
-  margin-left: 5px;
+  font-size:22px;
+  margin-left:5px;
 }
 
 .rank{
-  font-weight: bold;
-  font-size: 18px;
+  font-weight:bold;
+  font-size:18px;
 }
 
 .highlight{
-  color: #e91e63;
-  font-weight: bold;
+  color:#e91e63;
+  font-weight:bold;
 }
 
 .no-results{
-  font-size: 18px;
-  color: #555;
-  margin-top: 30px;
+  font-size:18px;
+  color:#555;
+  margin-top:30px;
 }
 </style>
-
 </head>
 
 <body>
@@ -97,7 +96,6 @@ select{
 let results = []
 let exams = new Set()
 
-// تحميل النتائج
 async function loadResults(){
   try{
     const res = await fetch("results.json")
@@ -107,6 +105,7 @@ async function loadResults(){
     // جمع أسماء كل الامتحانات
     results.forEach(r => exams.add(r.quiz))
     const examSelect = document.getElementById("filterExam")
+    examSelect.innerHTML = '<option value="all">كل الامتحانات</option>'
     exams.forEach(ex => {
       const opt = document.createElement("option")
       opt.value = ex
@@ -121,7 +120,8 @@ async function loadResults(){
   }
 }
 
-window.onload = loadResults
+// ✅ تحديث تلقائي كل 3 ثواني
+setInterval(loadResults, 3000)
 
 function renderResults(){
   const container = document.getElementById("resultsContainer")
@@ -130,7 +130,6 @@ function renderResults(){
   const type = document.getElementById("sortType").value
   const selectedExam = document.getElementById("filterExam").value
 
-  // تصفية حسب الامتحان
   let filtered = selectedExam === "all" ? [...results] : results.filter(r => r.quiz === selectedExam)
 
   if(filtered.length === 0){
@@ -140,26 +139,22 @@ function renderResults(){
 
   // ترتيب النتائج
   if(type === "score"){
-    filtered.sort((a,b) => {
+    filtered.sort((a,b)=>{
       if(b.score !== a.score) return b.score - a.score
       return new Date(a.date) - new Date(b.date)
     })
   } else {
-    filtered.sort((a,b) => new Date(a.date) - new Date(b.date))
+    filtered.sort((a,b)=> new Date(a.date) - new Date(b.date))
   }
 
   // عرض النتائج
-  filtered.forEach((r,index) => {
+  filtered.forEach((r,index)=>{
     let medal = ""
     let extraClass = ""
-    if(index === 0){
-      medal = "🥇"
-      extraClass = "top1"
-    } else if(index === 1){
-      medal = "🥈"
-    } else if(index === 2){
-      medal = "🥉"
-    }
+
+    if(index === 0){ medal = "🥇"; extraClass="top1" }
+    else if(index === 1){ medal = "🥈" }
+    else if(index === 2){ medal = "🥉" }
 
     const percent = Math.round((r.score / r.total) * 100)
 
@@ -175,6 +170,8 @@ function renderResults(){
     `
   })
 }
+
+window.onload = loadResults
 </script>
 
 </body>
