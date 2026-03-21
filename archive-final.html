@@ -107,53 +107,6 @@
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-  /* 🎥 شكل الفيديو الطبيعي */
-.plyr {
-  max-width: 700px;
-  margin: 20px auto;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-/* يخلي الفيديو ياخد العرض كامل */
-.plyr video {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* يرجع الأزرار للوضع الطبيعي */
-.plyr__controls {
-  font-size: 14px;
-  padding: 10px;
-  flex-wrap: wrap;
-}
-
-/* يمنع خروج الأزرار برا */
-.plyr__control {
-  transform: none;
-}
-
-/* شريط التقدم طبيعي */
-.plyr__progress input {
-  height: 6px;
-}
-
-/* تحسين توزيع العناصر */
-.plyr__controls__item {
-  margin: 0 4px;
-}
   </style>
 </head>
 
@@ -170,7 +123,6 @@
 
 <div class="container" id="archive"></div>
 
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
 <script>
 
@@ -258,10 +210,6 @@ archive.appendChild(card)
 
 })
 
-// تفعيل Plyr
-setTimeout(()=>{
-document.querySelectorAll('.plyr-video').forEach(v=> new Plyr(v))
-},300)
 
 })
 .catch(()=>{
