@@ -3,88 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <title>الامتحان</title>
-<link rel="icon" href="Image Mar 15, 2026, 07_55_27 PM.png">
+
 <style>
 
 body{
-
 font-family:Tahoma;
 direction:rtl;
 background:#f0f8ff;
 text-align:center;
 padding:30px;
-
 }
 
+/* 📦 السؤال */
 .question{
-
 background:white;
 padding:20px;
 margin:20px auto;
-max-width:600px;
+max-width:700px;
 border-radius:10px;
+}
 
+/* 🔥 layout السؤال + الصورة */
+.question-box{
+display:flex;
+gap:15px;
+align-items:center;
+flex-wrap:wrap;
+}
+
+/* 📝 النص */
+.question-text{
+flex:1;
+text-align:right;
+font-size:18px;
+}
+
+/* 📸 الصورة */
+.question-img{
+width:130px;
+border-radius:10px;
+object-fit:cover;
+}
+
+/* 📱 موبايل */
+@media(max-width:600px){
+.question-box{
+flex-direction:column;
+}
+
+.question-img{
+width:100%;
+max-width:250px;
+}
 }
 
 .option{
-
 display:block;
-margin:5px;
-
+margin:8px;
+text-align:right;
 }
 
 #timer{
-
 font-size:20px;
 color:red;
-
 }
 
 button{
-
 padding:10px 20px;
 border:none;
 background:#4CAF50;
 color:white;
 border-radius:10px;
-
+cursor:pointer;
 }
-#timerBox{
 
+#timerBox{
 width:300px;
 margin:20px auto;
 text-align:center;
-
 }
 
 #timerText{
-
 font-size:28px;
 font-weight:bold;
 margin-bottom:10px;
-
 }
 
 #timerBarContainer{
-
 width:100%;
 height:10px;
 background:#ddd;
 border-radius:10px;
 overflow:hidden;
-
 }
 
 #timerBar{
-
 height:10px;
 width:100%;
 background:#4CAF50;
 transition:width 1s linear;
-
 }
-</style>
 
+</style>
 </head>
 
 <body>
@@ -92,13 +112,11 @@ transition:width 1s linear;
 <h2>الامتحان</h2>
 
 <div id="timerBox">
-
 <div id="timerText">10:00</div>
 
 <div id="timerBarContainer">
 <div id="timerBar"></div>
 </div>
-
 </div>
 
 <div id="quizContainer"></div>
@@ -119,39 +137,45 @@ fetch("quiz.json")
 const quiz=data[quizIndex]
 
 questions=quiz.questions
-
 time = quiz.time * 60
 
 startTimer()
-
 renderQuiz()
 
 })
 
+// 🎯 عرض الأسئلة مع الصورة
 function renderQuiz(){
 
 const container=document.getElementById("quizContainer")
 
 questions.forEach((q,i)=>{
 
-let html=`<div class="question">
+let html=`
+<div class="question">
 
+<div class="question-box">
+
+<div class="question-text">
 <b>س${i+1}:</b> ${q.question}
-
+</div>
 `
 
+// 📸 صورة (لو موجودة)
+if(q.image){
+html+=`<img src="${q.image}" class="question-img">`
+}
+
+html+=`</div>`
+
+// الاختيارات
 q.options.forEach((opt,index)=>{
 
 html+=`
-
 <label class="option">
-
 <input type="radio" name="q${i}" value="${index+1}">
-
 ${index+1} - ${opt}
-
 </label>
-
 `
 
 })
@@ -164,10 +188,10 @@ container.innerHTML+=html
 
 }
 
+// ⏱ التايمر
 function startTimer(){
 
 const totalTime = time
-
 const bar=document.getElementById("timerBar")
 
 const t=setInterval(()=>{
@@ -177,19 +201,13 @@ time--
 let minutes = Math.floor(time / 60)
 let seconds = time % 60
 
-if(seconds < 10){
-seconds = "0"+seconds
-}
-
-if(minutes < 10){
-minutes = "0"+minutes
-}
+if(seconds < 10) seconds = "0"+seconds
+if(minutes < 10) minutes = "0"+minutes
 
 document.getElementById("timerText").innerText =
 minutes + ":" + seconds
 
 let percent = (time / totalTime) * 100
-
 bar.style.width = percent + "%"
 
 if(percent < 30){
@@ -205,8 +223,7 @@ finishQuiz()
 
 }
 
-
-    // ✅ الجديد: حفظ النتيجة
+// 💾 حفظ النتيجة
 async function saveResult(score,total){
 
 try{
@@ -219,9 +236,9 @@ const quizzes = await res.json()
 const quizTitle = quizzes[index]?.title || "امتحان"
 
 const result = {
-name: name,
-score: score,
-total: total,
+name,
+score,
+total,
 quiz: quizTitle,
 date: new Date().toISOString(),
 finished: true
@@ -246,11 +263,12 @@ body:JSON.stringify(old)
 })
 
 }catch(e){
-console.log("خطأ في حفظ النتيجة", e)
+console.log("خطأ في الحفظ", e)
 }
 
 }
 
+// ✅ إنهاء الامتحان
 async function finishQuiz(){
 
 let score=0
@@ -279,14 +297,14 @@ localStorage.setItem("quiz_score",score)
 localStorage.setItem("quiz_total",questions.length)
 localStorage.setItem("quiz_answers",JSON.stringify(answers))
 
-// ⏳ استنى الحفظ فعلاً
+// حفظ على السيرفر
 try{
 await saveResult(score,questions.length)
 }catch(e){
-console.log("فشل الحفظ لكن هنكمل", e)
+console.log("فشل الحفظ", e)
 }
 
-// ⏱ تأخير بسيط عشان GitHub يحدث
+// تحويل
 setTimeout(()=>{
 window.location="results.html"
 },500)
