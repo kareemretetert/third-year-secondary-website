@@ -78,5 +78,13 @@
     "quiz": "امتحان",
     "date": "2026-03-21T20:55:29.641Z",
     "finished": true
+  },
+  {
+    "name": "يس",
+    "score": 1,
+    "total": 1,
+    "quiz": "امتحان",
+    "date": "2026-03-21T20:57:30.621Z",
+    "finished": true
   }
 ]
