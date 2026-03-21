@@ -1,37 +1,5 @@
 [
   {
-    "title": "kkkkkkkkk",
-    "time": "30",
-    "questions": [
-      {
-        "question": "uuuuu",
-        "options": [
-          "..",
-          ";;;"
-        ],
-        "answer": 2,
-        "image": "https://res.cloudinary.com/dvicie9uq/image/upload/v1774135046/ih3q4ztrxvpoy57vx1c7.png"
-      }
-    ]
-  },
-  {
-    "title": "نن",
-    "time": "30",
-    "questions": [
-      {
-        "question": "طط",
-        "options": [
-          "ك",
-          "م",
-          "ظ",
-          "م"
-        ],
-        "answer": 3,
-        "image": ""
-      }
-    ]
-  },
-  {
     "title": "امتحان",
     "time": "30",
     "questions": [
