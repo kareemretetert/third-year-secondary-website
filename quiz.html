@@ -113,9 +113,7 @@ let time=0
 const quizIndex=localStorage.getItem("quizIndex")
 
 fetch("quiz.json")
-
 .then(res=>res.json())
-
 .then(data=>{
 
 const quiz=data[quizIndex]
@@ -190,30 +188,71 @@ minutes = "0"+minutes
 document.getElementById("timerText").innerText =
 minutes + ":" + seconds
 
-
 let percent = (time / totalTime) * 100
 
 bar.style.width = percent + "%"
 
 if(percent < 30){
-
 bar.style.background = "red"
-
 }
 
 if(time<=0){
-
 clearInterval(t)
-
 finishQuiz()
-
 }
 
 },1000)
 
 }
 
-function finishQuiz(){
+
+// ✅ الجديد: حفظ النتيجة
+async function saveResult(score,total){
+
+try{
+
+const name = localStorage.getItem("quiz_username") || "بدون اسم"
+const index = localStorage.getItem("quizIndex")
+
+const res = await fetch("quiz.json")
+const quizzes = await res.json()
+const quizTitle = quizzes[index]?.title || "امتحان"
+
+const result = {
+name: name,
+score: score,
+total: total,
+quiz: quizTitle,
+date: new Date().toISOString(),
+finished: true
+}
+
+// تحميل القديم
+let old=[]
+try{
+const r = await fetch("results.json")
+old = await r.json()
+if(!Array.isArray(old)) old=[]
+}catch{}
+
+// إضافة
+old.push(result)
+
+// حفظ
+await fetch("/.netlify/functions/saveResults",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify(old)
+})
+
+}catch(e){
+console.log("خطأ في حفظ النتيجة", e)
+}
+
+}
+
+
+async function finishQuiz(){
 
 let score=0
 let answers=[]
@@ -225,12 +264,10 @@ const selected=document.querySelector(`input[name=q${i}]:checked`)
 const chosen = selected ? parseInt(selected.value) : null
 
 answers.push({
-
 question:q.question,
 options:q.options,
 correct:q.answer,
 chosen:chosen
-
 })
 
 if(chosen == q.answer){
@@ -238,10 +275,16 @@ score++
 }
 
 })
+
+// حفظ محلي
 localStorage.setItem("quiz_score",score)
 localStorage.setItem("quiz_total",questions.length)
 localStorage.setItem("quiz_answers",JSON.stringify(answers))
 
+// ⭐ أهم إضافة
+await saveResult(score,questions.length)
+
+// انتقال
 window.location="results.html"
 
 }
