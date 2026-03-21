@@ -172,13 +172,20 @@ function renderResults(){
     filtered.sort((a,b)=> new Date(a.date) - new Date(b.date))
   }
 
-  // عرض النتائج مع ترقيم صحيح لكل طالب
+  // تحديد الأوائل فقط للتنسيق
+  const top3 = filtered.slice(0,3)
+
+  // عرض النتائج
   filtered.forEach((r,index)=>{
     let medal = ""
     let extraClass = ""
-    if(index === 0){ medal="🥇"; extraClass="top1"; }
-    else if(index === 1){ medal="🥈"; }
-    else if(index === 2){ medal="🥉"; }
+    
+    // التمييز للأوائل فقط
+    if(top3.includes(r)){
+      if(index === 0) { medal="🥇"; extraClass="top1"; }
+      else if(index === 1) { medal="🥈"; }
+      else if(index === 2) { medal="🥉"; }
+    }
 
     const percent = Math.round((r.score / r.total) * 100)
 
