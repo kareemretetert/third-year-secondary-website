@@ -152,24 +152,32 @@ if(o2) options.push(o2)
 if(o3) options.push(o3)
 if(o4) options.push(o4)
 
-const answer=parseInt(document.getElementById("answerNumber").value)
+const answerInput = document.getElementById("answerNumber").value
+const answer = parseInt(answerInput)
 
+// ❌ تحقق أقوى
+if(!answerInput){
+alert("لازم تختار رقم الإجابة الصحيحة")
+return
+}
+
+if(isNaN(answer)){
+alert("الإجابة لازم تكون رقم")
+return
+}
+
+if(answer < 1 || answer > options.length){
+alert("رقم الإجابة غير صحيح")
+return
+}
+  
 
 if(!q || options.length < 2){
 alert("يجب إدخال سؤال واختيارين على الأقل")
 return
 }
 
-if(answer== NaN){
-alert("يجب ادخال رقم الاجابة الصحيحة")
-return
-}
 
-  
-if(answer < 1 || answer > options.length){
-alert("رقم الإجابة غير صحيح")
-return
-}
 
 // 📸 صورة
 let imageUrl = ""
