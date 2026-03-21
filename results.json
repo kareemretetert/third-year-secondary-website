@@ -30,5 +30,13 @@
     "quiz": "امتحان اسبوعي",
     "date": "2026-03-21T19:09:06.815Z",
     "finished": true
+  },
+  {
+    "name": "julia",
+    "score": 3,
+    "total": 3,
+    "quiz": "امتحان اسبوعي",
+    "date": "2026-03-21T19:19:30.743Z",
+    "finished": true
   }
 ]
