@@ -22,5 +22,13 @@
     "quiz": "امتحان اسبوعي",
     "date": "2026-03-21T19:08:27.735Z",
     "finished": true
+  },
+  {
+    "name": "kero",
+    "score": 2,
+    "total": 3,
+    "quiz": "امتحان اسبوعي",
+    "date": "2026-03-21T19:09:06.815Z",
+    "finished": true
   }
 ]
