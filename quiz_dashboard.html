@@ -42,6 +42,41 @@ box-shadow:0 0 10px rgba(0,0,0,0.1);
 .deleteBtn{
 background:#d9534f;
 }
+
+  #loader{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+display:none;
+}
+
+.spinner{
+width:50px;
+height:50px;
+border:5px solid #eee;
+border-top:5px solid #6a3ab2;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-bottom:15px;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+#loader p{
+color:white;
+font-size:18px;
+}
 </style>
 </head>
 
@@ -139,6 +174,10 @@ return data.secure_url
 // ➕ إضافة سؤال
 async function addQuestion(){
 
+showLoader()
+
+try{
+
 const q=document.getElementById("question").value
 
 let options=[]
@@ -157,27 +196,28 @@ const answer = parseInt(answerInput)
 
 // ❌ تحقق أقوى
 if(!answerInput){
+hideLoader()
 alert("لازم تختار رقم الإجابة الصحيحة")
 return
 }
 
 if(isNaN(answer)){
+hideLoader()
 alert("الإجابة لازم تكون رقم")
 return
 }
 
 if(answer < 1 || answer > options.length){
+hideLoader()
 alert("رقم الإجابة غير صحيح")
 return
 }
-  
 
 if(!q || options.length < 2){
+hideLoader()
 alert("يجب إدخال سؤال واختيارين على الأقل")
 return
 }
-
-
 
 // 📸 صورة
 let imageUrl = ""
@@ -187,6 +227,7 @@ if(imageFile){
 try{
 imageUrl = await uploadImage(imageFile)
 }catch{
+hideLoader()
 alert("فشل رفع الصورة")
 return
 }
@@ -202,7 +243,16 @@ image:imageUrl
 document.getElementById("qCount").innerText="عدد الأسئلة: "+questions.length
 
 clearFields()
+
+hideLoader()
 alert("تم إضافة السؤال")
+
+}catch(e){
+hideLoader()
+alert("حصل خطأ")
+console.log(e)
+}
+
 }
 
 // حفظ على GitHub
@@ -217,10 +267,15 @@ body:JSON.stringify(data)
 // نشر الامتحان
 async function publishQuiz(){
 
+showLoader()
+
+try{
+
 const title=document.getElementById("quizTitle").value
 const time=document.getElementById("quizTime").value
 
 if(!title || questions.length==0){
+hideLoader()
 alert("اكتب اسم الامتحان وأضف أسئلة")
 return
 }
@@ -240,7 +295,15 @@ renderQuiz()
 questions=[]
 document.getElementById("qCount").innerText="عدد الأسئلة: 0"
 
+hideLoader()
 alert("تم نشر الامتحان 🎉")
+
+}catch(e){
+hideLoader()
+alert("فشل النشر")
+console.log(e)
+}
+
 }
 
 // عرض الامتحانات
@@ -288,7 +351,20 @@ document.getElementById("opt4").value=""
 document.getElementById("answerNumber").value=""
 document.getElementById("questionImage").value=""
 }
-</script>
 
+
+  function showLoader(){
+document.getElementById("loader").style.display="flex"
+}
+
+function hideLoader(){
+document.getElementById("loader").style.display="none"
+}
+</script>
+  
+<div id="loader">
+  <div class="spinner"></div>
+  <p>جاري التنفيذ...</p>
+</div>
 </body>
 </html>
