@@ -154,10 +154,17 @@ if(o4) options.push(o4)
 
 const answer=parseInt(document.getElementById("answerNumber").value)
 
+
 if(!q || options.length < 2){
 alert("يجب إدخال سؤال واختيارين على الأقل")
 return
 }
+
+if(answer== NaN){
+alert("يجب ادخال رقم الاجابة الصحيحة")
+return
+}
+
   
 if(answer < 1 || answer > options.length){
 alert("رقم الإجابة غير صحيح")
