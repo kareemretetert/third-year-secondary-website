@@ -15,6 +15,21 @@
     ]
   },
   {
+    "title": "امتحان",
+    "time": "30",
+    "questions": [
+      {
+        "question": "ب",
+        "options": [
+          "ي",
+          "ب",
+          "ل"
+        ],
+        "answer": 2
+      }
+    ]
+  },
+  {
     "title": "امتحان شامل",
     "time": "30",
     "questions": [
