@@ -1,77 +1,64 @@
+const fetch = require("node-fetch");
+
 exports.handler = async function(event) {
+  try {
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+    const repo = "kareemretetert/third-year-secondary-website";
+    const path = "results.json";
 
-try {
+    // النتيجة الجديدة القادمة من الطالب
+    const newResult = JSON.parse(event.body);
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
+    // 🔹 جلب الملف الحالي من GitHub
+    const fileRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json"
+      }
+    });
 
-const repo = "kareemretetert/third-year-secondary-website"
-const path = "results.json"
+    if (fileRes.status !== 200) {
+      return {
+        statusCode: 500,
+        body: "فشل تحميل results.json من GitHub"
+      };
+    }
 
-const data = JSON.parse(event.body)
+    const fileData = await fileRes.json();
+    const sha = fileData.sha;
 
-// 🔹 هات الملف الحالي
-const fileRes = await fetch(
-`https://api.github.com/repos/${repo}/contents/${path}`,
-{
-headers: {
-Authorization: `token ${GITHUB_TOKEN}`,
-Accept: "application/vnd.github.v3+json"
-}
-}
-)
+    // 🔹 قراءة النتائج الحالية وتحويلها من base64
+    let currentResults = JSON.parse(Buffer.from(fileData.content, 'base64').toString('utf-8'));
+    if (!Array.isArray(currentResults)) currentResults = [];
 
-let sha = null
+    // 🔹 إضافة النتيجة الجديدة
+    currentResults.push(newResult);
 
-if (fileRes.status === 200) {
-const file = await fileRes.json()
-sha = file.sha
-}
+    // 🔹 تحويل البيانات الجديدة إلى base64
+    const updatedContent = Buffer.from(JSON.stringify(currentResults, null, 2)).toString('base64');
 
-// 🔹 تجهيز البيانات
-const updatedContent = Buffer
-.from(JSON.stringify(data, null, 2))
-.toString("base64")
+    // 🔹 رفع الملف المحدّث إلى GitHub
+    const updateRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify({
+        message: `إضافة نتيجة جديدة للطالب ${newResult.name}`,
+        content: updatedContent,
+        sha: sha,
+        branch: "main"
+      })
+    });
 
-// 🔹 رفع التعديل
-const updateRes = await fetch(
-`https://api.github.com/repos/${repo}/contents/${path}`,
-{
-method: "PUT",
-headers: {
-Authorization: `token ${GITHUB_TOKEN}`,
-Accept: "application/vnd.github.v3+json",
-"Content-Type": "application/json"
-},
-body: JSON.stringify({
-message: "update results",
-content: updatedContent,
-sha: sha || undefined,
-branch: "main"
-})
-}
-)
+    if (!updateRes.ok) {
+      const err = await updateRes.json();
+      return { statusCode: 500, body: JSON.stringify(err) };
+    }
 
-const result = await updateRes.json()
-
-if (updateRes.status >= 400) {
-return {
-statusCode: 500,
-body: JSON.stringify(result)
-}
-}
-
-return {
-statusCode: 200,
-body: "Results updated successfully"
-}
-
-} catch (err) {
-
-return {
-statusCode: 500,
-body: err.message
-}
-
-}
-
-}
+    return { statusCode: 200, body: "تم حفظ النتيجة بنجاح ✅" };
+  } catch (err) {
+    return { statusCode: 500, body: err.message };
+  }
+};
