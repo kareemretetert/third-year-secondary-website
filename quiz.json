@@ -19,22 +19,6 @@
     "time": "30",
     "questions": [
       {
-        "question": "1",
-        "options": [
-          "1",
-          "11",
-          "1",
-          "11"
-        ],
-        "answer": 1
-      }
-    ]
-  },
-  {
-    "title": "امتحان شامل",
-    "time": "30",
-    "questions": [
-      {
         "question": "كيف يري الانسان",
         "options": [
           "ودانه",
