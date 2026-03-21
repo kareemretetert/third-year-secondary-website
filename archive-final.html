@@ -105,6 +105,45 @@
     @keyframes fadeInUp {
       to { opacity: 1; transform: translateY(0); }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* 🎥 تصغير الفيديو */
+video, .plyr {
+  max-width: 600px;
+  margin: 20px auto;
+}
+
+/* 🎥 تقليل حجم الأزرار */
+.plyr__controls {
+  font-size: 12px;
+  padding: 5px !important;
+}
+
+/* 🎥 تصغير الأزرار نفسها */
+.plyr__control {
+  transform: scale(0.8);
+}
+
+/* 🎥 تصغير شريط التحكم */
+.plyr__progress input {
+  height: 4px;
+}
+
+/* 🎥 تخفيف الشكل العام */
+.plyr {
+  border-radius: 10px;
+}
   </style>
 </head>
 
@@ -209,7 +248,7 @@ archive.appendChild(card)
 
 })
 
-// تشغيل الفيديو
+// تفعيل Plyr
 setTimeout(()=>{
 document.querySelectorAll('.plyr-video').forEach(v=> new Plyr(v))
 },300)
