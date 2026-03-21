@@ -1,41 +1,5 @@
 [
   {
-    "title": "امتحان اسبوعي",
-    "time": "30",
-    "questions": [
-      {
-        "question": "5",
-        "options": [
-          "1",
-          "2",
-          "3",
-          "5"
-        ],
-        "answer": 4
-      },
-      {
-        "question": "html",
-        "options": [
-          "لغة تواصل",
-          "لغة بمجة",
-          "الاثنين معا",
-          "لغة كتابية للصفحات المتصفح"
-        ],
-        "answer": 4
-      },
-      {
-        "question": "kareem loves",
-        "options": [
-          "J",
-          "E",
-          "M",
-          "R"
-        ],
-        "answer": 1
-      }
-    ]
-  },
-  {
     "title": "امتحان شامل",
     "time": "30",
     "questions": [
