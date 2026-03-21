@@ -5,59 +5,71 @@
 <title>نتائج الطلاب</title>
 
 <style>
-
 body{
-font-family:Tahoma;
-direction:rtl;
-background:#f0f8ff;
-padding:30px;
-text-align:center;
+  font-family: Tahoma;
+  direction: rtl;
+  background: #f0f8ff;
+  padding: 30px;
+  text-align: center;
 }
 
 h2{
-margin-bottom:20px;
+  margin-bottom: 20px;
 }
 
 .controls{
-margin-bottom:20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 select{
-padding:10px;
-border-radius:10px;
-border:1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
 }
 
 .card{
-background:white;
-padding:15px;
-margin:10px auto;
-max-width:600px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-text-align:right;
+  background: white;
+  padding: 15px;
+  margin: 10px auto;
+  max-width: 600px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  text-align: right;
+  transition: transform 0.2s;
+}
+.card:hover{
+  transform: translateY(-5px);
 }
 
 .top1{
-border:3px solid gold;
-background:#fff8dc;
+  border: 3px solid gold;
+  background: #fff8dc;
 }
 
 .medal{
-font-size:20px;
-margin-left:5px;
+  font-size: 22px;
+  margin-left: 5px;
 }
 
 .rank{
-font-weight:bold;
-font-size:18px;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 .highlight{
-color:#e91e63;
-font-weight:bold;
+  color: #e91e63;
+  font-weight: bold;
 }
 
+.no-results{
+  font-size: 18px;
+  color: #555;
+  margin-top: 30px;
+}
 </style>
 
 </head>
@@ -67,116 +79,102 @@ font-weight:bold;
 <h2>🏆 نتائج الطلاب</h2>
 
 <div class="controls">
+  <label>ترتيب حسب:</label>
+  <select id="sortType" onchange="renderResults()">
+    <option value="score">الأعلى درجة</option>
+    <option value="time">الأسبق</option>
+  </select>
 
-<label>ترتيب حسب:</label>
-
-<select id="sortType" onchange="renderResults()">
-<option value="score">الأعلى درجة</option>
-<option value="time">الأسبق</option>
-</select>
-
+  <label>اختيار الامتحان:</label>
+  <select id="filterExam" onchange="renderResults()">
+    <option value="all">كل الامتحانات</option>
+  </select>
 </div>
 
 <div id="resultsContainer"></div>
 
 <script>
-
-let results=[]
+let results = []
+let exams = new Set()
 
 // تحميل النتائج
 async function loadResults(){
+  try{
+    const res = await fetch("results.json")
+    results = await res.json()
+    if(!Array.isArray(results)) results = []
 
-try{
-const res = await fetch("results.json")
-results = await res.json()
+    // جمع أسماء كل الامتحانات
+    results.forEach(r => exams.add(r.quiz))
+    const examSelect = document.getElementById("filterExam")
+    exams.forEach(ex => {
+      const opt = document.createElement("option")
+      opt.value = ex
+      opt.innerText = ex
+      examSelect.appendChild(opt)
+    })
 
-if(!Array.isArray(results)) results=[]
-
-renderResults()
-
-}catch{
-document.getElementById("resultsContainer").innerHTML =
-"<p>لا توجد نتائج</p>"
-}
-
+    renderResults()
+  }catch{
+    document.getElementById("resultsContainer").innerHTML =
+    "<p class='no-results'>لا توجد نتائج</p>"
+  }
 }
 
 window.onload = loadResults
 
-
 function renderResults(){
+  const container = document.getElementById("resultsContainer")
+  container.innerHTML = ""
 
-const container = document.getElementById("resultsContainer")
-container.innerHTML=""
+  const type = document.getElementById("sortType").value
+  const selectedExam = document.getElementById("filterExam").value
 
-let sorted = [...results]
+  // تصفية حسب الامتحان
+  let filtered = selectedExam === "all" ? [...results] : results.filter(r => r.quiz === selectedExam)
 
-const type = document.getElementById("sortType").value
+  if(filtered.length === 0){
+    container.innerHTML = "<p class='no-results'>لا توجد نتائج لهذا الامتحان</p>"
+    return
+  }
 
-// 🔥 ترتيب
-if(type === "score"){
+  // ترتيب النتائج
+  if(type === "score"){
+    filtered.sort((a,b) => {
+      if(b.score !== a.score) return b.score - a.score
+      return new Date(a.date) - new Date(b.date)
+    })
+  } else {
+    filtered.sort((a,b) => new Date(a.date) - new Date(b.date))
+  }
 
-sorted.sort((a,b)=>{
-if(b.score !== a.score){
-return b.score - a.score
-}else{
-return new Date(a.date) - new Date(b.date)
+  // عرض النتائج
+  filtered.forEach((r,index) => {
+    let medal = ""
+    let extraClass = ""
+    if(index === 0){
+      medal = "🥇"
+      extraClass = "top1"
+    } else if(index === 1){
+      medal = "🥈"
+    } else if(index === 2){
+      medal = "🥉"
+    }
+
+    const percent = Math.round((r.score / r.total) * 100)
+
+    container.innerHTML += `
+      <div class="card ${extraClass}">
+        <div class="rank">${medal} المركز ${index+1}</div>
+        <p><b>👤 الاسم:</b> ${r.name} ${index===0 ? "⭐" : ""}</p>
+        <p><b>📝 الامتحان:</b> ${r.quiz}</p>
+        <p><b>📊 الدرجة:</b> ${r.score} / ${r.total}</p>
+        <p><b>📈 النسبة:</b> ${percent}%</p>
+        <p><b>⏱ الوقت:</b> ${new Date(r.date).toLocaleString()}</p>
+      </div>
+    `
+  })
 }
-})
-
-}else{
-
-sorted.sort((a,b)=>{
-return new Date(a.date) - new Date(b.date)
-})
-
-}
-
-// عرض
-sorted.forEach((r,index)=>{
-
-let medal = ""
-let extraClass = ""
-
-if(index === 0){
-medal = "🥇"
-extraClass = "top1"
-}
-else if(index === 1){
-medal = "🥈"
-}
-else if(index === 2){
-medal = "🥉"
-}
-
-const percent = Math.round((r.score / r.total) * 100)
-
-container.innerHTML += `
-
-<div class="card ${extraClass}">
-
-<div class="rank">
-${medal} المركز ${index+1}
-</div>
-
-<p><b>👤 الاسم:</b> ${r.name} ${index===0 ? "⭐" : ""}</p>
-
-<p><b>📝 الامتحان:</b> ${r.quiz}</p>
-
-<p><b>📊 الدرجة:</b> ${r.score} / ${r.total}</p>
-
-<p><b>📈 النسبة:</b> ${percent}%</p>
-
-<p><b>⏱ الوقت:</b> ${new Date(r.date).toLocaleString()}</p>
-
-</div>
-
-`
-
-})
-
-}
-
 </script>
 
 </body>
