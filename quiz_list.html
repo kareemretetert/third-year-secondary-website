@@ -91,13 +91,23 @@ container.innerHTML+=`
 
 function startQuiz(i){
 
+const name = prompt("اكتب اسمك")
+
+if(!name){
+alert("من فضلك اكتب اسمك")
+return
+}
+
 localStorage.setItem("quizIndex",i)
-
-const name=prompt("اكتب اسمك")
-
 localStorage.setItem("quiz_username",name)
 
+// ⭐ الجديد
+fetch("quiz.json")
+.then(res=>res.json())
+.then(data=>{
+localStorage.setItem("quiz_title", data[i].title)
 window.location="quiz.html"
+})
 
 }
 
