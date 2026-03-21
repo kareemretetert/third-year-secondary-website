@@ -120,8 +120,8 @@ async function loadResults(){
   }
 }
 
-// ✅ تحديث تلقائي كل 3 ثواني
-setInterval(loadResults, 3000)
+// ❌ تم الغاء التحديث التلقائي
+// setInterval(loadResults, 3000)
 
 function renderResults(){
   const container = document.getElementById("resultsContainer")
