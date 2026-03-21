@@ -121,10 +121,10 @@ if(entered!==password){
 }
 
 let summaries=[];
-const publishBtn=document.getElementById("publish");
+const publishBtn = document.getElementById("publish");
 
 // spinner
-const spinner=document.createElement("div");
+const spinner = document.createElement("div");
 spinner.style.textAlign="center";
 spinner.style.marginTop="10px";
 spinner.style.display="none";
@@ -150,6 +150,7 @@ function renderSummaries(){
       ${[...s.images,...s.videos,...s.files].map(f=>{
         return `<div class="file-item">
           <div class="file-name">${f.split('/').pop()}</div>
+          <div class="progress-wrapper"><div class="progress-bar" style="width:100%"></div></div>
           <div class="file-buttons">
             <a href="${f}" target="_blank" class="viewBtn">فتح</a>
             <a href="${f}" download class="downloadBtn">تحميل</a>
@@ -176,36 +177,8 @@ async function loadSummaries(){
 }
 window.onload=loadSummaries;
 
-// ضغط الفيديوهات على المتصفح (تحسين الجودة بدون فقدان كبير)
-async function compressVideo(file){
-  return new Promise((resolve)=>{
-    if(!file.type.startsWith("video")) return resolve(file);
-
-    const video=document.createElement("video");
-    const url=URL.createObjectURL(file);
-    video.src=url;
-    video.muted=true;
-    video.playsInline=true;
-    video.onloadeddata=()=>{
-      const canvas=document.createElement("canvas");
-      canvas.width=video.videoWidth/2; // تقليل الحجم للنصف
-      canvas.height=video.videoHeight/2;
-      const ctx=canvas.getContext("2d");
-      video.currentTime=0;
-      video.play();
-      video.onseeked=()=>{
-        ctx.drawImage(video,0,0,canvas.width,canvas.height);
-        canvas.toBlob((blob)=>{
-          resolve(new File([blob],file.name,{type:file.type}));
-        },"video/mp4",0.8); // جودة 80%
-      };
-    };
-  });
-}
-
-// رفع الملفات لجميع الأنواع مع تحسين الفيديو
+// رفع الملفات مع تحسين جودة الفيديو
 async function uploadToCloudinary(file){
-  if(file.type.startsWith("video")) file=await compressVideo(file);
   let resourceType="auto";
   if(file.type.includes("pdf") || file.type.includes("application")) resourceType="raw";
   const url=`https://api.cloudinary.com/v1_1/dvicie9uq/${resourceType}/upload`;
@@ -239,23 +212,27 @@ publishBtn.onclick=async()=>{
     return;
   }
 
-  const imageFiles=Array.from(document.getElementById("images").files);
-  const videoFiles=Array.from(document.getElementById("videos").files);
-  const fileFiles=Array.from(document.getElementById("files").files);
+  const imageFiles = document.getElementById("images").files;
+  const videoFiles = document.getElementById("videos").files;
+  const fileFiles = document.getElementById("files").files;
 
-  // رفع كل الملفات **متوازي بالكامل**
-  const uploadPromises=[
-    ...imageFiles.map(f=>uploadToCloudinary(f)),
-    ...videoFiles.map(f=>uploadToCloudinary(f)),
-    ...fileFiles.map(f=>uploadToCloudinary(f))
-  ];
+  // رفع متوازي لكل نوع
+  const imagePromises = Array.from(imageFiles).map(async f=>{
+    const url = await uploadToCloudinary(f);
+    return url;
+  });
+  const videoPromises = Array.from(videoFiles).map(async f=>{
+    const url = await uploadToCloudinary(f);
+    return url;
+  });
+  const filePromises = Array.from(fileFiles).map(async f=>{
+    const url = await uploadToCloudinary(f);
+    return url;
+  });
 
-  // تقسيم النتائج حسب النوع
-  const uploadedFiles=await Promise.all(uploadPromises);
-
-  const images=uploadedFiles.slice(0,imageFiles.length);
-  const videos=uploadedFiles.slice(imageFiles.length,imageFiles.length+videoFiles.length);
-  const files=uploadedFiles.slice(imageFiles.length+videoFiles.length);
+  const images = await Promise.all(imagePromises);
+  const videos = await Promise.all(videoPromises);
+  const files = await Promise.all(filePromises);
 
   const newSummary={title,date,content,images,videos,files};
   summaries.unshift(newSummary);
