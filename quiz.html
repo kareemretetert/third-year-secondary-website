@@ -260,7 +260,6 @@ let answers=[]
 questions.forEach((q,i)=>{
 
 const selected=document.querySelector(`input[name=q${i}]:checked`)
-
 const chosen = selected ? parseInt(selected.value) : null
 
 answers.push({
@@ -281,11 +280,17 @@ localStorage.setItem("quiz_score",score)
 localStorage.setItem("quiz_total",questions.length)
 localStorage.setItem("quiz_answers",JSON.stringify(answers))
 
-// ⭐ أهم إضافة
+// ⏳ استنى الحفظ فعلاً
+try{
 await saveResult(score,questions.length)
+}catch(e){
+console.log("فشل الحفظ لكن هنكمل", e)
+}
 
-// انتقال
+// ⏱ تأخير بسيط عشان GitHub يحدث
+setTimeout(()=>{
 window.location="results.html"
+},500)
 
 }
 
