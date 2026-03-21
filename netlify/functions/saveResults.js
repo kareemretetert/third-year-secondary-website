@@ -9,12 +9,13 @@ const path = "results.json"
 
 const data = JSON.parse(event.body)
 
-// هات الملف الحالي
+// 🔹 هات الملف الحالي
 const fileRes = await fetch(
 `https://api.github.com/repos/${repo}/contents/${path}`,
 {
 headers: {
-Authorization: `token ${GITHUB_TOKEN}`
+Authorization: `token ${GITHUB_TOKEN}`,
+Accept: "application/vnd.github.v3+json"
 }
 }
 )
@@ -26,22 +27,23 @@ const file = await fileRes.json()
 sha = file.sha
 }
 
-// تجهيز البيانات
+// 🔹 تجهيز البيانات
 const updatedContent = Buffer
 .from(JSON.stringify(data, null, 2))
 .toString("base64")
 
-// رفع التعديل
+// 🔹 رفع التعديل
 const updateRes = await fetch(
 `https://api.github.com/repos/${repo}/contents/${path}`,
 {
 method: "PUT",
 headers: {
 Authorization: `token ${GITHUB_TOKEN}`,
+Accept: "application/vnd.github.v3+json",
 "Content-Type": "application/json"
 },
 body: JSON.stringify({
-message: "update summaries",
+message: "update results",
 content: updatedContent,
 sha: sha || undefined,
 branch: "main"
@@ -60,7 +62,7 @@ body: JSON.stringify(result)
 
 return {
 statusCode: 200,
-body: "Summaries updated successfully"
+body: "Results updated successfully"
 }
 
 } catch (err) {
