@@ -446,5 +446,13 @@
     "quiz": "تاريخ ",
     "date": "2026-03-25T22:35:38.327Z",
     "finished": true
+  },
+  {
+    "name": "Nadia",
+    "score": 9,
+    "total": 16,
+    "quiz": "تاريخ ",
+    "date": "2026-03-25T22:42:50.531Z",
+    "finished": true
   }
 ]
