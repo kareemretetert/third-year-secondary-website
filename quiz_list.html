@@ -1,115 +1,280 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الامتحانات</title>
-<link rel="icon" href="Image Mar 15, 2026, 07_55_27 PM.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
 
+:root{
+--primary:#6a1b9a;
+--primary-dark:#4a148c;
+--bg:#f0f8ff;
+--card:#ffffff;
+--text:#2f2f39;
+--muted:#6b7280;
+}
+
+*{
+box-sizing:border-box;
+}
+
 body{
-font-family:Tahoma;
-direction:rtl;
-background:#f0f8ff;
+margin:0;
+font-family:'Cairo',sans-serif;
+background:linear-gradient(180deg,#f6fbff 0%,var(--bg) 100%);
+}
+
+/* 🔥 HEADER */
+header{
+background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+color:white;
 text-align:center;
-padding:30px;
+padding:25px 10px;
 }
 
-.quizCard{
-
-background:white;
-padding:20px;
-margin:15px auto;
-width:300px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-
+header h1{
+margin:0;
+font-size:clamp(20px,5vw,30px);
 }
 
-button{
-
-background:#6a3ab2;
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:10px;
-cursor:pointer;
-
-}
-.backBtn{
-
+.home-btn{
 display:inline-block;
-margin-bottom:20px;
-background:#6a3ab2;
+margin-top:10px;
+padding:8px 16px;
+border:2px solid white;
+border-radius:20px;
 color:white;
-padding:10px 20px;
-border-radius:10px;
 text-decoration:none;
+font-size:14px;
+}
+
+/* 🔥 CONTAINER */
+.container{
+max-width:1200px;
+margin:25px auto;
+padding:10px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:18px;
+}
+
+/* 🔥 CARD */
+.card{
+background:var(--card);
+padding:18px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+display:flex;
+flex-direction:column;
+transition:0.3s;
+height:100%;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+/* badge */
+.badge{
+background:#eee;
+padding:5px 10px;
+border-radius:20px;
+font-size:12px;
+display:inline-block;
+margin-bottom:10px;
+width:fit-content;
+}
+
+/* title */
+.card h3{
+margin:8px 0;
+font-size:18px;
+}
+
+/* text */
+.card p{
+color:var(--muted);
+font-size:14px;
+margin-bottom:12px;
+flex-grow:1;
+}
+
+/* input */
+.name-input{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:14px;
+margin-bottom:10px;
+}
+
+/* button */
+.start-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+color:white;
+font-weight:bold;
+cursor:pointer;
+font-size:14px;
+margin-top:auto;
+}
+
+.start-btn:hover{
+opacity:0.9;
+}
+
+/* 📱 موبايل */
+@media(max-width:600px){
+
+header{
+padding:20px 10px;
+}
+
+.container{
+grid-template-columns:1fr;
+gap:12px;
+}
+
+.card{
+padding:15px;
+border-radius:15px;
+}
+
+.card h3{
+font-size:16px;
+}
+
+.name-input{
+font-size:13px;
+}
+
+.start-btn{
+font-size:13px;
+padding:10px;
+}
 
 }
+
+/* 📱 تابلت */
+@media(min-width:601px) and (max-width:992px){
+
+.container{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
 </style>
 </head>
 
 <body>
-<a href="index.html" class="backBtn">
-الصفحة الرئيسية
-</a>
-<h2>اختر الامتحان</h2>
 
-<div id="quizList"></div>
+<header>
+<h1>📚 الامتحانات</h1>
+<a href="compition.html" class="home-btn">العودة ⬅</a>
+</header>
+
+<div class="container" id="quizList"></div>
 
 <script>
-let quizResults = []
 
-// أولًا: تحميل النتائج الحالية
-async function loadResults() {
-  try {
-    const res = await fetch("results.json")
-    quizResults = await res.json()
-    if(!Array.isArray(quizResults)) quizResults = []
-  } catch {
-    quizResults = []
-  }
+// 🔥 إنشاء userId تلقائي
+let userId = localStorage.getItem("user_id")
+if(!userId){
+userId = "user_" + Date.now() + "_" + Math.floor(Math.random()*10000)
+localStorage.setItem("user_id", userId)
 }
-loadResults()
 
-fetch("quiz.json")
-.then(res=>res.json())
-.then(data=>{
-  const container=document.getElementById("quizList")
-  data.forEach((quiz,i)=>{
-    container.innerHTML+=`
-      <div class="quizCard">
-        <h3>${quiz.title}</h3>
-        <p>عدد الأسئلة: ${quiz.questions.length}</p>
-        <button onclick="startQuiz(${i})">ابدأ الامتحان</button>
-      </div>
-    `
-  })
+let quizResults=[]
+
+// تحميل النتائج
+async function loadResults(){
+try{
+const res=await fetch("results.json")
+quizResults=await res.json()
+if(!Array.isArray(quizResults)) quizResults=[]
+}catch{
+quizResults=[]
+}
+}
+
+async function loadQuizzes(){
+
+await loadResults()
+
+const res=await fetch("quiz.json")
+const data=await res.json()
+
+const container=document.getElementById("quizList")
+
+container.innerHTML=""
+
+data.forEach((quiz,i)=>{
+
+container.innerHTML+=`
+<div class="card">
+
+<span class="badge">امتحان</span>
+
+<h3>${quiz.title}</h3>
+
+<p>عدد الأسئلة: ${quiz.questions.length}</p>
+
+<input type="text" placeholder="اكتب اسمك" class="name-input" id="name${i}">
+
+<button class="start-btn" onclick="startQuiz(${i})">
+ابدأ الامتحان
+</button>
+
+</div>
+`
+
 })
 
-async function startQuiz(i){
-  const name = prompt("اكتب اسمك")
-  if(!name){
-    alert("من فضلك اكتب اسمك")
-    return
-  }
-
-  // 🔹 التحقق من أن الاسم لم يدخل الامتحان مسبقًا
-  const quizTitle = await fetch("quiz.json").then(r=>r.json()).then(data=>data[i].title)
-  const exists = quizResults.some(r => r.name.trim().toLowerCase() === name.trim().toLowerCase() && r.quiz === quizTitle)
-  if(exists){
-    alert("⚠ هذا الاسم قد دخل هذا الامتحان بالفعل، الرجاء اختيار اسم آخر")
-    return
-  }
-
-  // حفظ البيانات
-  localStorage.setItem("quizIndex", i)
-  localStorage.setItem("quiz_username", name)
-  localStorage.setItem("quiz_title", quizTitle)
-
-  // انتقال
-  window.location = "quiz.html"
 }
+
+loadQuizzes()
+
+// بدء الامتحان
+async function startQuiz(i){
+
+const name=document.getElementById("name"+i).value.trim()
+
+if(!name){
+alert("اكتب اسمك")
+return
+}
+
+const quizzes = await fetch("quiz.json").then(r=>r.json())
+const quizTitle = quizzes[i].title
+
+// 🔥 المنع الجديد (بالـ userId)
+const exists = quizResults.some(r =>
+r.userId === userId &&
+r.quiz === quizTitle
+)
+
+if(exists){
+alert("⚠ لقد قمت بحل هذا الامتحان بالفعل")
+return
+}
+
+localStorage.setItem("quizIndex", i)
+localStorage.setItem("quiz_username", name)
+localStorage.setItem("quiz_title", quizTitle)
+
+window.location="quiz.html"
+
+}
+
 </script>
 
 </body>
