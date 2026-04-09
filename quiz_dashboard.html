@@ -792,7 +792,7 @@ history.scrollRestoration = "manual";
 
 // تفعيل السلوك الناعم للسكروول
 document.documentElement.style.scrollBehavior = "smooth";
-const password="youssef123"
+const password="kimo123"
 const entered=prompt("ادخل كلمة المرور")
 
 if(entered!==password){
@@ -886,11 +886,11 @@ async function uploadImage(file){
 // ✨ ضغط الصورة قبل الرفع
 const compressed = await compressImage(file)
 
-const url = "https://api.cloudinary.com/v1_1/dvicie9uq/image/upload"
+const url = "https://api.cloudinary.com/v1_1/ddiegmhji/image/upload"
 
 const formData = new FormData()
 formData.append("file", compressed)
-formData.append("upload_preset", "my_upload_new")
+formData.append("upload_preset", "my_upload")
 const res = await fetch(url,{
 method:"POST",
 body:formData
@@ -1567,5 +1567,4 @@ modal.style.display = "none"
 </div>
 </body>
 </html>
-
 
