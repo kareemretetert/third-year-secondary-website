@@ -1,20 +1,5 @@
 [
   {
-    "title": "fgh",
-    "time": "30",
-    "questions": [
-      {
-        "question": "fghgfh",
-        "options": [
-          "gfhgf",
-          "hgfhgfh"
-        ],
-        "answer": 2,
-        "image": ""
-      }
-    ]
-  },
-  {
     "title": "امتحان كيمياء الباب الثالث ",
     "time": "60",
     "questions": [
