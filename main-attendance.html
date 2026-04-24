@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الحضور</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+  
+  window.firebase = { initializeApp, getFirestore, collection, onSnapshot, addDoc, updateDoc, doc, query, orderBy };
+</script>
+
+<style>
+:root{
+  --bg:#f0f4ff;
+  --card:#fff;
+  --text:#222;
+  --primary:#4a6cf7;
+  --green:#22c55e;
+  --red:#ef4444;
+  --gray:#94a3b8;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.dark{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#f1f5f9;
+  --primary:#38bdf8;
+  --gray:#64748b;
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI";
+  background:var(--bg);
+  color:var(--text);
+  direction:rtl;
+}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 12px 12px 12px;
+  background:var(--card);
+  position:relative;
+  height: 40px;
+}
+
+.title{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-weight:bold;
+}
+
+.class-btn{
+  background:var(--primary);
+  padding:8px 12px;
+  border-radius:10px;
+  color:white;
+  border:none;
+}
+
+/* ✅ toggle mode */
+.toggle-mode {  
+  position: absolute;  
+  top: 15px;  
+  left: 15px;  
+}  
+
+.switch {  
+  width: 62.5px;  
+  height: 35px;  
+  border-radius: 50px;  
+  display: flex;  
+  align-items: center;  
+  justify-content: space-between;  
+  padding: 0 8px;  
+  cursor: pointer;  
+  position: relative;  
+  background: var(--card);  
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);  
+  transition: 0.3s;  
+}  
+
+.icon {  
+  font-size: 14px;  
+  z-index: 1;  
+}  
+
+.circle {  
+  width: 28px;  
+  height: 28px;  
+  background: white;  
+  border-radius: 50%;  
+  position: absolute;  
+  left: 3.5px;  
+  transition: 0.3s;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  font-size: 14px;  
+}  
+
+body.dark .circle {  
+  left: 47px;  
+}  
+  
+body:not(.dark) .circle{  
+  background: #1e293b;     
+}  
+body.dark .switch {  
+  background: #1e293b;  
+}  
+
+body:not(.dark) .switch {  
+  background: #ffffff;  
+}
+
+/* 🔥 Header Bar كامل - Stats + Search مع بعض */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 15px 20px 15px;
+  gap: 15px;
+  padding: 12px;
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* 🔥 الـ Stats */
+.stats-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.3);
+  font-weight: bold;
+  font-size: 13px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.stat-present { 
+  background: rgba(34,197,94,0.25); 
+  color: var(--green);
+}
+.stat-absent { 
+  background: rgba(239,68,68,0.25); 
+  color: var(--red);
+}
+.stat-pending { 
+  background: rgba(148,163,184,0.25); 
+  color: var(--gray);
+}
+
+/* 🔥 الـ Search صغير جنب الـ Stats */
+.search-container {
+  display: flex;
+  align-items: center;
+  width: 220px; /* صغير مناسب */
+  height: 36px; /* ارتفاع صغير */
+  background-color: var(--card);
+  border: 1px solid var(--gray);
+  border-radius: 18px; /* نصف الارتفاع */
+  overflow: hidden;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.search-container:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(74,108,247,0.15);
+}
+
+.search-input {
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  padding: 0 14px 0 8px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  direction: rtl;
+}
+
+.search-input::placeholder {
+  color: var(--gray);
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* 1. الحالة العادية للزرار والخط الفاصل */
+.search-button {
+  width: 42px;
+  height: 100%;
+  background-color: rgba(74, 108, 247, 0.05);
+  border: none;
+  /* بنستخدم المتغير --gray اللي أنت معرفه في الـ root */
+  border-left: 1px solid var(--gray); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 0px;
+}
+
+/* 2. التأثير عند الضغط (Focus) */
+.search-container:focus-within .search-button {
+  /* بنستخدم المتغير --primary اللي هو أزرق في الفاتح وسماوي في الغامق */
+  border-left: 1px solid var(--primary); 
+}
+
+/* 3. زيادة تأكيد على البرواز الخارجي عشان يتماشى مع الوضعين */
+.search-container:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(74, 108, 247, 0.3);
+}
+
+.search-button:hover {
+  background-color: var(--primary);
+}
+
+.search-icon {
+  width: 16px; /* صغير */
+  height: 16px;
+  fill: var(--text);
+  opacity: 0.9;
+}
+
+.search-button:hover .search-icon {
+  fill: white;
+}
+
+/* student */
+.student{
+  margin:10px;
+  padding:12px;
+  border-radius:15px;
+  background:var(--card);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:.3s;
+  position: relative;
+}
+
+/* الحالات */
+.present-bg{
+  border-right:5px solid var(--green);
+  background:rgba(34,197,94,0.25);
+}
+
+.absent-bg{
+  border-right:5px solid var(--red);
+  background:rgba(239,68,68,0.25);
+}
+
+.neutral-bg{
+  border-right:5px solid #94a3b8;
+  background:rgba(148,163,184,0.15);
+}
+
+.locked{
+  border-right:5px solid #64748b;
+  background:rgba(100,116,139,0.15);
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+
+.lock-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  z-index: 2;
+}
+
+/* buttons */
+button{
+  border:none;
+  padding:8px 12px;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+.present, .absent {
+  background: var(--gray);
+  stroke: var(--gray);
+}
+
+.present.active{
+  background:var(--green);
+  box-shadow:0 0 10px rgba(34,197,94,0.7);
+}
+
+.absent.active{
+  background:var(--red);
+  box-shadow:0 0 10px rgba(239,68,68,0.7);
+}
+
+/* الحاوية اللي بتجمع الزرارين */
+.action-buttons {
+  display: flex;
+  gap: 10px;         /* المسافة بين الزرارين */
+  padding: 10px 15px;
+  justify-content: center; /* توسيط الزرارين */
+}
+
+/* تعديل خصائص الأزرار عشان ييجوا جنب بعض */
+.save, .add {
+  flex: 1;           /* بيخلي الزرارين ياخدوا نفس المساحة بالظبط */
+  margin: 0 !important; /* إلغاء المارجن القديم */
+  width: auto !important; /* إلغاء العرض 90% القديم */
+  padding: 15px;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ألوان الأزرار (للتأكيد) */
+.save { background: var(--primary); }
+.add { background: #f59e0b; }
+
+/* تنسيق للموبايل عشان ميبقوش لازقين في الجوانب */
+@media (max-width: 480px) {
+  .action-buttons {
+    padding: 10px;
+  }
+}
+
+/* modal */
+.modal{
+  display:none;
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  background:var(--card);
+  padding:20px;
+  border-radius:15px;
+  width:80%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  z-index: 1000;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal h3 {
+  margin: 0 0 20px 0;
+  text-align: center;
+  color: var(--primary);
+  font-size: 1.4em;
+}
+
+.modal input,.modal select{
+  width:100%;
+  margin:10px 0;
+  padding:15px;
+  border-radius:12px;
+  border: 2px solid #e2e8f0;
+  background: rgba(255,255,255,0.9);
+  font-size: 16px;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.modal input:focus, .modal select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+  transform: translateY(-2px);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-btn {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.cancel-btn {
+  background: #6b7280;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #3654d4;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(74, 108, 247, 0.3);
+}
+
+.cancel-btn:hover {
+  background: #4b5563;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(107, 114, 128, 0.3);
+}
+
+.locked .present,
+.locked .absent {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.overlay.active {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .header-bar {
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+  }
+  
+  .search-container {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .stat-item {
+    padding: 5px 8px;
+    font-size: 12px;
+    min-width: 38px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Header -->
+<header>
+  <button class="class-btn" onclick="goToClass()">الفصول</button>
+  <div class="title">📊 الحضور</div>
+  <div class="toggle-mode">  
+    <div class="switch" onclick="toggleMode()">  
+      <span class="icon">🌙</span>  
+      <div class="circle" id="icon"></div>  
+      <span class="icon">☀️</span>  
+    </div>  
+  </div>
+</header>
+
+<!-- 🔥 Header Bar كامل - Stats + Search -->
+<div class="header-bar">
+  <!-- Stats على اليمين -->
+  <div class="stats-container" id="statsContainer">
+    <div class="stat-item stat-present">
+      <span>✔️</span>
+      <span id="presentCount">0</span>
+    </div>
+    <div class="stat-item stat-absent">
+      <span>❌</span>
+      <span id="absentCount">0</span>
+    </div>
+    <div class="stat-item stat-pending">
+      <span>⏳</span>
+      <span id="pendingCount">0</span>
+    </div>
+  </div>
+
+  <!-- Search صغير جنبه -->
+  <div class="search-container">
+    
+    <button class="search-button" onclick="render()">
+      <svg class="search-icon" viewBox="0 0 24 24">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+    </button>
+   <input type="text" class="search-input" id="search" placeholder="ابحث..." oninput="render()"> 
+  </div>
+</div>
+
+<div id="list"></div>
+
+  <div class="action-buttons">
+    <button class="save" onclick="save()">💾 حفظ</button>
+    <button class="add" onclick="openModal()">➕ إضافة طالب</button>
+  </div>
+<div class="overlay" id="overlay" onclick="closeModal()"></div>
+
+<div class="modal" id="modal">
+  <h3>➕ إضافة طالب جديد</h3>
+  <input id="name" placeholder="📝 اكتب اسم الطالب">
+  <select id="class">
+    <option value="اولى_ولاد">👦 أولى ولاد</option>
+    <option value="اولى_بنات">👧 أولى بنات</option>
+    <option value="تانية_ولاد">👦 تانية ولاد</option>
+    <option value="تانية_بنات">👧 تانية بنات</option>
+  </select>
+  <div class="modal-buttons">
+    <button class="modal-btn save-btn" onclick="addStudent()">✅ حفظ</button>
+    <button class="modal-btn cancel-btn" onclick="closeModal()">❌ إلغاء</button>
+  </div>
+</div>
+
+<script>
+let students = [];
+let currentMode = null;
+let unsubscribe = null;
+let db = null;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBmDbj5Mcv2JTccocwIKiK4E-Jr5RtVpqw",
+  authDomain: "attendance-system-d12bd.firebaseapp.com",
+  projectId: "attendance-system-d12bd",
+  storageBucket: "attendance-system-d12bd.firebasestorage.app",
+  messagingSenderId: "1040656901088",
+  appId: "1:1040656901088:web:84ebaf3855e455c2a24185"
+};
+
+async function initFirebase() {
+  try {
+    const app = firebase.initializeApp(firebaseConfig);
+    db = firebase.getFirestore(app);
+    setupRealtimeListener();
+  } catch (error) {
+    console.error("Firebase Error:", error);
+    alert("خطأ في الاتصال بقاعدة البيانات");
+  }
+}
+
+function setupRealtimeListener() {
+  const q = firebase.query(firebase.collection(db, "students"), firebase.orderBy("name"));
+  
+  unsubscribe = firebase.onSnapshot(q, (snapshot) => {
+    students = [];
+    snapshot.forEach((doc) => {
+      students.push({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
+    render();
+  }, (error) => {
+    console.error("Realtime listener error:", error);
+  });
+}
+
+function isAllowedTime(){
+  return true;
+}
+
+function render(){
+  let list=document.getElementById("list");
+  let search=document.getElementById("search").value.toLowerCase();
+  list.innerHTML="";
+
+  let locked = !isAllowedTime();
+
+  students.filter(s=>s.name.toLowerCase().includes(search))
+  .forEach((s,i)=>{
+    let statusClass = "";
+    if(locked){
+      statusClass = "locked";
+    }else{
+      if(s.status === true) statusClass="present-bg";
+      else if(s.status === false) statusClass="absent-bg";
+      else statusClass="neutral-bg";
+    }
+
+    let lockIcon = locked ? '<span class="lock-icon">🔒</span>' : '';
+
+    list.innerHTML+=`
+    <div class="student ${statusClass}" data-id="${s.id}">
+      ${lockIcon}
+      <span style="margin-right: ${locked ? '30px' : '0'};">${s.name}</span>
+      <div>
+        <button class="present ${s.status===true?'active':''}" onclick="mark('${s.id}',true)" ${locked ? 'disabled' : ''}>
+          <svg width="18" height="18" viewBox="0 0 24 24" style="stroke: var(--gray);">
+            <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="3" fill="none"/>
+          </svg>
+        </button>
+        <button class="absent ${s.status===false?'active':''}" onclick="mark('${s.id}',false)" ${locked ? 'disabled' : ''}>
+          <svg width="18" height="18" viewBox="0 0 24 24" style="stroke: var(--gray);">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>`;
+  });
+
+  updateStats();
+}
+
+async function mark(studentId, val){
+  if(!isAllowedTime()) return;
+  
+  try {
+    await firebase.updateDoc(firebase.doc(db, "students", studentId), {
+      status: val
+    });
+    currentMode = val;
+  } catch (error) {
+    console.error("Mark error:", error);
+  }
+}
+
+function updateStats(){
+  let p=students.filter(s=>s.status===true).length;
+  let a=students.filter(s=>s.status===false).length;
+  let r=students.filter(s=>s.status==null).length;
+  
+  document.getElementById("presentCount").textContent = p;
+  document.getElementById("absentCount").textContent = a;
+  document.getElementById("pendingCount").textContent = r;
+}
+
+// ✅ التعديل هنا: إزالة الحفظ الـ_bulk للـ `status`، وتركه فقط إشعار
+async function save(){
+  alert("تم حفظ الغياب كما سجلته في الـ Firestore ✅");
+}
+
+// زر "إضافة طالب" كما هو
+async function addStudent(){
+  let name=document.getElementById("name").value.trim();
+  let cls=document.getElementById("class").value;
+
+  if(!name) {
+    alert("⚠️ اكتب اسم الطالب أولاً");
+    document.getElementById("name").focus();
+    return;
+  }
+
+  try {
+    await firebase.addDoc(firebase.collection(db, "students"), {
+      name: name,
+      class: cls,
+      status: null
+    });
+    
+    closeModal();
+    alert("✅ تم إضافة الطالب بنجاح");
+  } catch (error) {
+    console.error("Add student error:", error);
+    alert("خطأ في إضافة الطالب");
+  }
+}
+
+// باقي الـ functions كما هي
+function openModal(){
+  document.getElementById("modal").style.display="block";
+  document.getElementById("overlay").classList.add("active");
+  document.getElementById("name").value = "";
+  document.getElementById("class").value = "اولى_ولاد";
+  document.getElementById("name").focus();
+}
+
+function closeModal(){
+  document.getElementById("modal").style.display="none";
+  document.getElementById("overlay").classList.remove("active");
+}
+
+function goToClass(){
+  window.location.href="class-attendance.html";
+}
+
+if(localStorage.getItem("mode") === "dark") {  
+  document.body.classList.add("dark");  
+}  
+
+function toggleMode() {  
+  document.body.classList.toggle("dark");  
+  let isDark = document.body.classList.contains("dark");  
+  localStorage.setItem("mode", isDark ? "dark" : "light");  
+  document.getElementById("icon").innerText = isDark ? "🌙" : "☀️";  
+}
+
+window.onload=function(){
+  let isDark = document.body.classList.contains("dark");  
+  let icon = document.getElementById("icon");  
+  icon.innerText = isDark ? "🌙" : "☀️";  
+  initFirebase();
+}
+</script>
+
+</body>
+</html>
